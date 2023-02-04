@@ -1,0 +1,27 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    width: 100vw;
+    height: 100vh;
+}
+button{
+    cursor: pointer;
+    background-color: transparent;
+    color: black;
+    font-size: 16px;
+    border-width: 1px;
+    border-radius: 20px;
+    padding-left: 25px;
+    padding-right: 25px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    transition: all 0.2s;
+}
+button:hover{
+    background-color: black;
+    color: white;
+    
+}

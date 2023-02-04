@@ -19,5 +19,6 @@ from backend_api.views import *
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', TextView.as_view(), name='oh shit')
+    path('', TextView.as_view(), name='oh shit'),
+    path('analyze', Analyze.as_view(), name='rmvpunc'),
 ]

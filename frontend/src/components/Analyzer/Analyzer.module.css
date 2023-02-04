@@ -1,0 +1,25 @@
+.Container{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.TextInput{
+    width: 60%;
+    height: 40%;
+    padding: 12px 20px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    background-color: #f8f8f8;
+    resize: none;
+    transition: all 0.2s;
+}
+.TextInput:active{
+    border: 2px solid #000;
+}
+button{
+    margin-top: 10px;
+}
