@@ -21,10 +21,10 @@ const Analyzer = () => {
       <textarea id="text" name="text" className={s.TextInput} placeholder="Напишите текст..." onChange={e => setText(e.target.value)}></textarea>
       <button onClick={analyze}>Проанализировать</button>
       {analyzeInfo ?
-        <div>
-          <p>Количество слов: {analyzeInfo.wordcount}</p>
-          <p>Полярность: {analyzeInfo.polarity}</p>
-          <p>Тон: {analyzeInfo.analyzed_text}</p>
+        <div style={{display: "flex", flexDirection: "column", gap: 10, marginTop: 20}}>
+          <p>Тема (Наивный байесовский классификатор): {analyzeInfo.nb}</p>
+          <p>Тема (Метод опорных векторов): {analyzeInfo.sgd}</p>
+          <p>Тема (Логистическая регрессия): {analyzeInfo.logreg}</p>
         </div>
         :
         null
