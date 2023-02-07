@@ -32,12 +32,31 @@ def lemmatize_text(text):
     tokens = [token for token in text_lem if token != ' ']
     return " ".join(tokens)
 
+def find_stop_words(text):
+    russian_stopwords = stopwords.words("russian")
+    russian_stopwords.extend(['…', '«', '»', '...'])
+    tokens = word_tokenize(text)
+    text_stop_words = [token for token in tokens if token in russian_stopwords and token != ' ']
+    count = len(text_stop_words)
+    word_count = {}
+    for word in text_stop_words:
+        if word in word_count:
+            word_count[word] += 1
+        else:
+            word_count[word] = 1
+    result = []
+    for key, value in word_count.items():
+        result.append({"word": key, "count": value})
+
+    return [result, count]
+
 def remove_stop_words(text):
     russian_stopwords = stopwords.words("russian")
     russian_stopwords.extend(['…', '«', '»', '...'])
     tokens = word_tokenize(text)
     tokens = [
         token for token in tokens if token not in russian_stopwords and token != ' ']
+
     return " ".join(tokens)
 
 # Load AI
@@ -65,10 +84,22 @@ class TextView(APIView):
 # Тематический анализ текста, полученного от фронтэнда
 class Analyze(APIView):
     def post(self, request):
+        # Получаем текст от фронтенда
         text = request.POST.get('text', 'default')
+        # Считаем количество симоволов
+        num_symbols = len([i for i in text if i != "\n"])
+        # Считаем количество символов без пробела
+        num_symbols_without_space = len([i for i in text if i != ' ' and i != "\n"])
+        # Считаем количество слов
+        num_words = len(text.split())
+        # Удаляем из текста пунктуацию, числа, и двойные пробелы
         text2analyze = remove_multiple_spaces(remove_numbers(remove_punctuation(text.lower())))
+        # Ищем стоп слова и удаляем их
+        stop_words = find_stop_words(text2analyze)
         text2analyze = remove_stop_words(text2analyze)
+        # Лемматизируем текст
         text2analyze = lemmatize_text(text2analyze)
+        # Получаем от ИИ предположение
         nb_pred = nb.predict([text2analyze])  
         sgd_pred = sgd.predict([text2analyze])
         logreg_pred = logreg.predict([text2analyze])
@@ -77,5 +108,9 @@ class Analyze(APIView):
             "nb": nb_pred,
             "sgd": sgd_pred,
             "logreg": logreg_pred,
+            "num_symbols": num_symbols,
+            "num_symbols_without_space": num_symbols_without_space,
+            "num_words": num_words,
+            "stop_words": stop_words,
         }
         return Response(result)

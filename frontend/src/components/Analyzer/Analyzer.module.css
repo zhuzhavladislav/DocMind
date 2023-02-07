@@ -1,25 +1,157 @@
-.Container{
-    width: 100vw;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.Container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
-.TextInput{
-    width: 60%;
-    height: 40%;
-    padding: 12px 20px;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    background-color: #f8f8f8;
-    resize: none;
-    transition: all 0.2s;
+.TextInput {
+  width: 60vw;
+  height: 40vh;
+  padding: 12px 20px;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  background-color: #f8f8f8;
+  resize: none;
+  margin-top: 20px;
+  transition: all 0.2s;
 }
-.TextInput:active{
-    border: 2px solid #000;
+.TextInput:active {
+  border: 2px solid #000;
 }
-button{
-    margin-top: 10px;
+button {
+  margin-top: 20px;
+}
+
+.list {
+  display: flex;
+  gap: 10px;
+}
+.list label,
+.list input {
+  cursor: pointer;
+  background-color: rgb(243, 243, 243);
+  color: black;
+  font-size: 16px;
+  border-radius: 20px;
+  padding-left: 25px;
+  padding-right: 25px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  transition: all 0.2s;
+  -webkit-appearance: button;
+  /* WebKit */
+  -moz-appearance: button;
+  /* Mozilla */
+  -o-appearance: button;
+  /* Opera */
+  -ms-appearance: button;
+  /* Internet Explorer */
+  appearance: button;
+  /* CSS3 */
+}
+
+.list input[type="radio"] {
+  display: none;
+}
+
+.list label:hover {
+  background: #ddd;
+}
+
+.list input[type="radio"]:checked + label {
+  background-color: black;
+  color: white;
+}
+
+.sortable {
+  width: 980px;
+  border-left: 1px solid #c6d5e1;
+  border-top: 1px solid #c6d5e1;
+  border-bottom: none;
+  margin: 0 auto 15px;
+}
+.sortable th {
+  background: url(../../images/header-bg.gif);
+  text-align: left;
+  color: #cfdce7;
+  border: 1px solid #fff;
+  border-right: none;
+}
+.sortable th h3 {
+  font-size: 10px;
+  padding: 6px 8px 8px;
+}
+.sortable td {
+  padding: 4px 6px 6px;
+  border-bottom: 1px solid #c6d5e1;
+  border-right: 1px solid #c6d5e1;
+}
+.sortable .head h3 {
+  background: url(../../images/sort.gif) 7px center no-repeat;
+  cursor: pointer;
+  padding-left: 18px;
+}
+.sortable .desc,
+.sortable .asc {
+  background: url(../../images/header-selected-bg.gif);
+}
+.sortable .desc h3 {
+  background: url(../../images/desc.gif) 7px center no-repeat;
+  cursor: pointer;
+  padding-left: 18px;
+}
+.sortable .asc h3 {
+  background: url(../../images/asc.gif) 7px center no-repeat;
+  cursor: pointer;
+  padding-left: 18px;
+}
+.sortable .head:hover,
+.sortable .desc:hover,
+.sortable .asc:hover {
+  color: #fff;
+}
+.sortable .evenrow td {
+  background: #fff;
+}
+.sortable .oddrow td {
+  background: #ecf2f6;
+}
+.sortable td.evenselected {
+  background: #ecf2f6;
+}
+.sortable td.oddselected {
+  background: #dce6ee;
+}
+
+#controls {
+  width: 980px;
+  margin: 0 auto;
+  height: 20px;
+}
+#perpage {
+  float: left;
+  width: 200px;
+}
+#perpage select {
+  float: left;
+  font-size: 11px;
+}
+#perpage span {
+  float: left;
+  margin: 2px 0 0 5px;
+}
+#navigation {
+  float: left;
+  width: 580px;
+  text-align: center;
+}
+#navigation img {
+  cursor: pointer;
+}
+#text {
+  float: left;
+  width: 200px;
+  text-align: right;
+  margin-top: 2px;
 }
