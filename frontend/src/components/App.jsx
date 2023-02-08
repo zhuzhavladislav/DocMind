@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom"
 import { publicRoutes } from "../routes"
 import './App.css';
+import Footer from "./Footer/Footer";
 import Header from "./Header/Header";
 
 const App = () => {
@@ -14,6 +15,7 @@ const App = () => {
           ))}
         </Routes>
       </BrowserRouter>
+      <Footer />
     </>
 
   );

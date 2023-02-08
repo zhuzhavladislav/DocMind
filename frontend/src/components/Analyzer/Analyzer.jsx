@@ -21,7 +21,10 @@ const Analyzer = () => {
         console.log(res.data);
         setIsLoading(false)
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        setIsLoading(false)
+        alert(err)
+      });
   }
 
   return (

@@ -17,8 +17,10 @@ from .models import *
 from .serializers import *
 from rest_framework.response import Response
 
+russian_stopwords = stopwords.words("russian")
+
 def remove_punctuation(text):
-    return "".join([ch if ch not in string.punctuation else ' ' for ch in text])
+    return "".join([ch if ch not in string.punctuation and ch not in ['…', '«', '»', '...', '—', '–', '­', ' ', ' '] else ' ' for ch in text])
 
 def remove_numbers(text):
     return ''.join([i if not i.isdigit() else ' ' for i in text])
@@ -33,8 +35,6 @@ def lemmatize_text(text):
     return " ".join(tokens)
 
 def dictionary_generate(text):
-    russian_stopwords = stopwords.words("russian")
-    russian_stopwords.extend(['…', '«', '»', '...'])
     tokens = word_tokenize(text)
     dictionary = [token for token in tokens if token != ' ']
     dictionary_core = [token for token in tokens if token not in russian_stopwords and token != ' ']
@@ -66,8 +66,6 @@ def dictionary_generate(text):
 
 
 def find_stop_words(text):
-    russian_stopwords = stopwords.words("russian")
-    russian_stopwords.extend(['…', '«', '»', '...'])
     tokens = word_tokenize(text)
     text_stop_words = [token for token in tokens if token in russian_stopwords and token != ' ']
     count = len(text_stop_words)
@@ -84,8 +82,6 @@ def find_stop_words(text):
     return [result, count]
 
 def remove_stop_words(text):
-    russian_stopwords = stopwords.words("russian")
-    russian_stopwords.extend(['…', '«', '»', '...'])
     tokens = word_tokenize(text)
     tokens = [
         token for token in tokens if token not in russian_stopwords and token != ' ']
@@ -93,9 +89,12 @@ def remove_stop_words(text):
     return " ".join(tokens)
 
 # Load AI
-nb = joblib.load('native_bayes.pkl')
-sgd = joblib.load('sgd.pkl')
-logreg = joblib.load('logistic_regression.pkl')
+nb = joblib.load('native_bayes_lemm.pkl')
+sgd = joblib.load('sgd_lemm.pkl')
+logreg = joblib.load('logistic_regression_lemm.pkl')
+# nb = joblib.load('native_bayes.pkl')
+# sgd = joblib.load('sgd.pkl')
+# logreg = joblib.load('logistic_regression.pkl')
 
 # Create your views here.
 class TextView(APIView):
