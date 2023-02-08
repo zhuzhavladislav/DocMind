@@ -32,6 +32,39 @@ def lemmatize_text(text):
     tokens = [token for token in text_lem if token != ' ']
     return " ".join(tokens)
 
+def dictionary_generate(text):
+    russian_stopwords = stopwords.words("russian")
+    russian_stopwords.extend(['…', '«', '»', '...'])
+    tokens = word_tokenize(text)
+    dictionary = [token for token in tokens if token != ' ']
+    dictionary_core = [token for token in tokens if token not in russian_stopwords and token != ' ']
+
+    dictionary_result = []
+    dictionary_core_result = []
+    word_count = {}
+    for word in dictionary:
+        if word in word_count:
+            word_count[word] += 1
+        else:
+            word_count[word] = 1
+
+    for key, value in word_count.items():
+        dictionary_result.append({"word": key, "count": value})
+
+    word_count = {}
+    for word in dictionary_core:
+        if word in word_count:
+            word_count[word] += 1
+        else:
+            word_count[word] = 1
+
+    for key, value in word_count.items():
+        dictionary_core_result.append({"word": key, "count": value})
+
+    return [dictionary_result, dictionary_core_result]
+    
+
+
 def find_stop_words(text):
     russian_stopwords = stopwords.words("russian")
     russian_stopwords.extend(['…', '«', '»', '...'])
@@ -94,6 +127,8 @@ class Analyze(APIView):
         num_words = len(text.split())
         # Удаляем из текста пунктуацию, числа, и двойные пробелы
         text2analyze = remove_multiple_spaces(remove_numbers(remove_punctuation(text.lower())))
+        # Составляем словарь
+        dictionary = dictionary_generate(lemmatize_text(text2analyze))
         # Ищем стоп слова и удаляем их
         stop_words = find_stop_words(text2analyze)
         text2analyze = remove_stop_words(text2analyze)
@@ -112,5 +147,6 @@ class Analyze(APIView):
             "num_symbols_without_space": num_symbols_without_space,
             "num_words": num_words,
             "stop_words": stop_words,
+            "dictionary": dictionary,
         }
         return Response(result)

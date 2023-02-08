@@ -1,0 +1,84 @@
+header {
+    padding-left: 20%;
+    padding-right: 20%;
+    display: flex;
+    height: 50px;
+    background-color: #000000;
+    align-items: center;
+    justify-content: space-between;
+}
+header img {
+    width: auto;
+    height: 3vw;
+}
+header p {
+    font-size: 32;
+    font-weight: 900;
+    color: #fff;
+    font-size: calc(3vmin + 0.2vw);
+}
+.menu{
+    display: flex;
+    margin-left: 10px;
+    align-items: center;
+    font-size: calc(1.8vmin + 0.1vw);
+    gap: 1.5vw;
+    transition: 0.2s;
+}
+.menu a {
+    color: #ffffff;
+    transition: 0.2s;
+}
+.menu a:link {
+    color: #ffffff;
+}
+.menu a:visited {
+    color: #ffffff;
+}
+.menu a:hover {
+    cursor: pointer;
+    color: #f86021;
+}
+.menu a:active {
+    color: #f86021;
+}
+.search {
+    display: grid;
+    grid-template-columns: auto auto;
+    margin-left: 20px;
+    gap: 7%;
+}
+.search input {
+    width: auto;
+    min-width: 100px;
+    border-width: 0 0 1px;
+    outline: none;
+    background-size: calc(1.2vmin + 0.6vw);
+    font-size: calc(1.2vmin + 0.6vw);
+    padding-left: 25px;
+    padding-bottom: 5px;
+    color: #1d2120;
+    transition: 0.2s;
+}
+.search input:focus {
+    border-color: #f86021;
+}
+
+.filters {
+    display: flex;
+    align-items: center;
+    font-size: calc(1.2vmin + 0.6vw);
+    gap: 5px;
+    transition: 0.2s;
+}
+.filters:hover {
+    cursor: pointer;
+    color: #f86021;
+}
+.filters:active {
+    color: #f86021;
+}
+.filters img {
+    width: calc(1.5vmin + 0.8vw);
+    height: calc(1.5vmin + 0.8vw);
+}

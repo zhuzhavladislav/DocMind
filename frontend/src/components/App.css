@@ -1,27 +1,68 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 *{
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-}
-body{
-    width: 100vw;
-    height: 100vh;
+    font-family: 'Inter';
 }
 button{
     cursor: pointer;
-    background-color: transparent;
-    color: black;
+    background-color: black;
+    color: white;
     font-size: 16px;
-    border-width: 1px;
+    border-color: transparent;
     border-radius: 20px;
     padding-left: 25px;
     padding-right: 25px;
     padding-top: 5px;
     padding-bottom: 5px;
+    justify-items: center;
     transition: all 0.2s;
 }
 button:hover{
-    background-color: black;
+    background-color: #f86021;
     color: white;
     
+}
+p {
+    font-size: 12px;
+}
+th {
+    font-size: 12px;
+}
+td {
+    font-size: 12px;
+}
+h1 {
+    font-size: calc(2.5vmin + 0.5vw);
+    font-weight: 900;
+}
+
+h2 {
+    font-size: 2.5vw;
+    font-weight: 800;
+}
+h3 {
+    font-size: 1.5vw;
+    font-weight: 700;
+}
+h4 {
+    font-size: 1vw;
+    font-weight: 600;
+}
+p {
+    font-size: calc(1.2vmin + 0.4vw);
+}
+a:link {
+    text-decoration: none;
+}
+a:visited {
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: none;
+}
+a:active {
+    text-decoration: none;
 }

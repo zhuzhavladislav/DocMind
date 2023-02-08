@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react'
 import s from './Analyzer.module.css'
 import axios from "axios";
-import first from "../../images/first.gif"
-import previous from "../../images/previous.gif"
-import next from "../../images/next.gif"
-import last from "../../images/last.gif"
+import Table from './Table';
 
 const Analyzer = () => {
   const [text, setText] = useState("")
   const [analyzeInfo, setAnalyzeInfo] = useState()
+  const [category, setCategory] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
 
   //Формируем POST запрос к серверу Django, и получаем ответ в виде данных
   const analyze = () => {
+    setIsLoading(true)
     const data = new FormData()
     data.append('text', text)
     axios
@@ -19,77 +19,92 @@ const Analyzer = () => {
       .then(res => {
         setAnalyzeInfo(res.data)
         console.log(res.data);
+        setIsLoading(false)
       })
       .catch(err => console.log(err));
   }
 
   return (
-    <div className={s.Container}>
-      <textarea id="text" name="text" className={s.TextInput} placeholder="Напишите текст..." onChange={e => setText(e.target.value)}></textarea>
-      <button onClick={analyze}>Проанализировать</button>
+    <div className={s.container}>
+      {isLoading ? <div className={s.loading}>Loading</div> : null}
+      <h1 style={{ marginTop: 20 }}>Семантический анализ текста <span className={s.highlight}>DocAnalyze</span></h1>
+      <div className={s.textAnalyze}>
+        <textarea id="text" name="text" className={s.textInput} placeholder="Напишите текст..." onChange={e => setText(e.target.value)}></textarea>
+        <button onClick={analyze}>Проанализировать</button>
+      </div>
       {analyzeInfo ?
-        <div style={{display: "flex", flexDirection: "column", gap: 10, marginTop: 20}}>
-          <p>Количество символов с пробелами: {analyzeInfo.num_symbols}</p>
-          <p>Количество символов (без пробелов): {analyzeInfo.num_symbols_without_space}</p>
-          <p>Количество слов: {analyzeInfo.num_words}</p>
-          <p>Количество стоп-слов: {analyzeInfo.stop_words[1]}</p>
-          <p>Водность: {Math.round(analyzeInfo.stop_words[1]/analyzeInfo.num_words*100)}%</p>
-          
-          <p><strong>Тематика</strong></p>
-          <p style={{marginLeft: 10}}>Наивный байесовский классификатор: {analyzeInfo.nb}</p>
-          <p style={{marginLeft: 10}}>Метод опорных векторов: {analyzeInfo.sgd}</p>
-          <p style={{marginLeft: 10}}>Логистическая регрессия: {analyzeInfo.logreg}</p>
-          {/* <div className={s.list}>
-            <input type="radio" id="category1" name="category" />
-            <label for="category1" id="category1">Без стоп-слов</label>
-            <input type="radio" id="category2" name="category" />
-            <label for="category2" id="category2">Со стоп-словами</label>
-            <input type="radio" id="category3" name="category" />
-            <label for="category3" id="category3">Стоп слова</label>
-            <input type="radio" id="category4" name="category" />
-            <label for="category4" id="category4">Словарь</label>
-          </div> */}
-
-          <table cellPadding="0" cellSpacing="0" border="0" id="table" className={s.sortable}>
-            <thead>
-              <tr>
-                <th className={s.nosort}><p>#</p></th>
-                <th><p>Слово</p></th>
-                <th><p>Кол-во</p></th>
-                <th><p>% в ядре</p></th>
-                <th><p>% в тексте</p></th>
-              </tr>
-            </thead>
-            <tbody>
-              {analyzeInfo.stop_words[0].map((word, i)=>(
-                <tr key={word.word}>
-                    <td>{i}</td>
-                    <td>{word.word}</td>
-                    <td>{word.count}</td>
-                    <td>-</td>
-                  <td>{(word.count * 100 / analyzeInfo.num_words).toFixed(1)}%</td>
-                  </tr>
-              ))}
-            </tbody>
-          </table>
-          <div id="controls">
-            <div id="perpage">
-              <select>
-                <option value="5">5</option>
-                <option value="10" selected="selected">10</option>
-                <option value="20">20</option>
-                <option value="50">50</option>
-                <option value="100">100</option>
-              </select>
-              <span> элементов в таблице</span>
-            </div>
-            <div id="navigation">
-              <img src={first} style={{width:16, height:16}} alt="First Page"/>
-              <img src={previous} style={{ width: 16, height: 16 }} alt="First Page"/>
-              <img src={next} style={{width:16, height:16}} alt="First Page"/>
-              <img src={last} style={{width:16, height:16}} alt="Last Page"/>
-            </div>
-            <div id="text">Страница: <span id="currentpage"></span> из <span id="pagelimit"></span></div>
+        <div style={{ display: "flex", width: "60vw", flexDirection: "row", gap: 20, marginTop: 20, transition: "all 0.2s" }} className={s.fade}>
+          <div>
+            <form className={s.filter}>
+              <input type="radio" id="category1" name="category" value="noStopWords" onClick={(e) => setCategory(e.target.value)} />
+              <label for="category1">Без стоп-слов</label>
+              <input type="radio" id="category2" name="category" value="withStopWords" onClick={(e) => setCategory(e.target.value)} />
+              <label for="category2">Со стоп-словами</label>
+              <input type="radio" id="category3" name="category" value="stopWords" onClick={(e) => setCategory(e.target.value)} />
+              <label for="category3">Стоп-слова</label>
+              <input type="radio" id="category4" name="category" value="dictionary" onClick={(e) => setCategory(e.target.value)} />
+              <label for="category4">Словарь</label>
+            </form>
+            {category == "noStopWords"
+              ? <Table words={analyzeInfo.dictionary[1]} analyzeInfo={analyzeInfo} />
+              : category == "withStopWords"
+                ? <Table words={analyzeInfo.dictionary[0]} analyzeInfo={analyzeInfo} />
+                : category == "stopWords"
+                  ? <Table words={analyzeInfo.stop_words[0]} analyzeInfo={analyzeInfo} />
+                  : category == "dictionary"
+                    ? <div style={{ marginTop: 10 }}>{analyzeInfo.dictionary[1].map((word) => (<p>{word.word}</p>))}</div>
+                    : null
+            }
+          </div>
+          <div>
+            <table cellPadding="0" cellSpacing="0" border="0" id="table" className={s.sortable}>
+              <thead>
+                <tr>
+                  <th><p>Параметр</p></th>
+                  <th><p>Значение</p></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Количество символов с пробелами<div className={s.hint} data-tooltip="Количество символов в тексте ВКЛЮЧАЯ пробелы">?</div></td>
+                  <td>{analyzeInfo.num_symbols}</td>
+                </tr>
+                <tr>
+                  <td>Количество символов (без пробелов)<div className={s.hint} data-tooltip="Количество символов в тексте БЕЗ учета пробелов">?</div></td>
+                  <td>{analyzeInfo.num_symbols_without_space}</td>
+                </tr>
+                <tr>
+                  <td>Количество слов<div className={s.hint} data-tooltip="Общее количество слов в тексте">?</div></td>
+                  <td>{analyzeInfo.num_words}</td>
+                </tr>
+                <tr>
+                  <td>Количество стоп-слов<div className={s.hint} data-tooltip="Общее количество слов не несущих информационную нагрузку">?</div></td>
+                  <td>{analyzeInfo.stop_words[1]}</td>
+                </tr>
+                <tr>
+                  <td>Водность<div className={s.hint} data-tooltip="Показывает процент слов не несущих информационную нагрузку (водность)">?</div></td>
+                  <td>{Math.round(analyzeInfo.stop_words[1] / analyzeInfo.num_words * 100)}%</td>
+                </tr>
+                <tr>
+                  <td>Словарь<div className={s.hint} data-tooltip="Количество слов употребляющихся в тексте">?</div></td>
+                  <td>{analyzeInfo.dictionary[0].length}</td>
+                </tr>
+                <tr>
+                  <td>Словарь ядра<div className={s.hint} data-tooltip="Количество РАЗНЫХ слов исключая стоп-слова">?</div></td>
+                  <td>{analyzeInfo.dictionary[1].length}</td>
+                </tr>
+                <tr>
+                  <td>Тематика<div className={s.hint} data-tooltip="Автоматическое определение тематики">?</div></td>
+                  <td>
+                    <tr style={{ display: "flex", flexDirection: "column" }}>
+                      <td style={{ display: "flex" }}>{analyzeInfo.nb}<div className={s.hint} data-tooltip="Наивный байесовский классификатор">?</div></td>
+                      <td style={{ display: "flex" }}>{analyzeInfo.sgd}<div className={s.hint} data-tooltip="Метод опорных векторов">?</div></td>
+                      <td style={{ display: "flex" }}>{analyzeInfo.logreg}<div className={s.hint} data-tooltip="Логистическая регрессия">?</div></td>
+                    </tr>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
         :
