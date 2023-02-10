@@ -100,10 +100,21 @@ const Analyzer = () => {
                   <td>Тематика<div className={s.hint} data-tooltip="Автоматическое определение тематики">?</div></td>
                   <td>
                     <tr style={{ display: "flex", flexDirection: "column" }}>
-                      <td style={{ display: "flex" }}>{analyzeInfo.nb}<div className={s.hint} data-tooltip="Наивный байесовский классификатор">?</div></td>
-                      <td style={{ display: "flex" }}>{analyzeInfo.sgd}<div className={s.hint} data-tooltip="Метод опорных векторов">?</div></td>
-                      <td style={{ display: "flex" }}>{analyzeInfo.logreg}<div className={s.hint} data-tooltip="Логистическая регрессия">?</div></td>
+                      <td style={{ display: "flex" }}>{analyzeInfo.semantic_native_bayes}<div className={s.hint} data-tooltip="Наивный байесовский классификатор">?</div></td>
+                      <td style={{ display: "flex" }}>{analyzeInfo.semantic_sgd}<div className={s.hint} data-tooltip="Метод опорных векторов">?</div></td>
+                      <td style={{ display: "flex" }}>{analyzeInfo.semantic_logistic_regression}<div className={s.hint} data-tooltip="Логистическая регрессия">?</div></td>
                     </tr>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Тональность<div className={s.hint} data-tooltip="Выявление в тексте эмоционально окрашенной лексики">?</div></td>
+                  <td>{analyzeInfo.sentiment[0][0] < 0.45
+                        ? "Позитивная"
+                        : analyzeInfo.sentiment[0][0] > 0.55
+                          ? "Негативная"
+                          : "Нейтральная"
+                      }
+                    <div className={s.hint} data-tooltip={"Негативная (Вероятность: " + Math.round(analyzeInfo.sentiment[0][0] * 100) + "%), Позитивная (Вероятность: " + Math.round(analyzeInfo.sentiment[0][1] * 100) + "%)"}>?</div>
                   </td>
                 </tr>
               </tbody>

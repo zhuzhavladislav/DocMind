@@ -1,3 +1,5 @@
+from pymystem3 import Mystem
+import pymorphy2
 import joblib
 import re
 import pandas as pd
@@ -6,7 +8,6 @@ import nltk
 import string
 from nltk.stem import *
 from nltk.corpus import stopwords
-from pymystem3 import Mystem
 from nltk import word_tokenize
 nltk.download('punkt')
 nltk.download("stopwords")
@@ -18,27 +19,32 @@ from .serializers import *
 from rest_framework.response import Response
 
 russian_stopwords = stopwords.words("russian")
+punctuation_marks = ['!', ',', '(', ')', ':', '-', '?', '.',
+                     '..', '…', '...', '«', '»', ';', '—', '–', '--', '­', ' ', ' ']
+morph = pymorphy2.MorphAnalyzer()
+word_to_index = joblib.load('./AI/word_to_index')
 
+#---Семантический анализ---#
+# Удаление знаков препинаний
 def remove_punctuation(text):
-    return "".join([ch if ch not in string.punctuation and ch not in ['…', '«', '»', '...', '—', '–', '­', ' ', ' '] else ' ' for ch in text])
-
+    return "".join([ch if ch not in string.punctuation and ch not in punctuation_marks else ' ' for ch in text])
+# Удаление чисел
 def remove_numbers(text):
     return ''.join([i if not i.isdigit() else ' ' for i in text])
-
+# Удаление двойных пробелов
 def remove_multiple_spaces(text):
 	return re.sub(r'\s+', ' ', text, flags=re.I)
-
+# Лемматизация текста
 def lemmatize_text(text):
     mystem = Mystem()
     text_lem = mystem.lemmatize(text)
     tokens = [token for token in text_lem if token != ' ']
     return " ".join(tokens)
-
+# Составление словаря
 def dictionary_generate(text):
     tokens = word_tokenize(text)
     dictionary = [token for token in tokens if token != ' ']
     dictionary_core = [token for token in tokens if token not in russian_stopwords and token != ' ']
-
     dictionary_result = []
     dictionary_core_result = []
     word_count = {}
@@ -60,11 +66,8 @@ def dictionary_generate(text):
 
     for key, value in word_count.items():
         dictionary_core_result.append({"word": key, "count": value})
-
     return [dictionary_result, dictionary_core_result]
-    
-
-
+# Поиск стоп-слов
 def find_stop_words(text):
     tokens = word_tokenize(text)
     text_stop_words = [token for token in tokens if token in russian_stopwords and token != ' ']
@@ -78,23 +81,46 @@ def find_stop_words(text):
     result = []
     for key, value in word_count.items():
         result.append({"word": key, "count": value})
-
     return [result, count]
-
+# Удаление стоп-слов
 def remove_stop_words(text):
     tokens = word_tokenize(text)
     tokens = [
         token for token in tokens if token not in russian_stopwords and token != ' ']
-
     return " ".join(tokens)
+#---Анализ тональности---#
+# Препроцесс
+def preprocess(text, stop_words, punctuation_marks, morph):
+    tokens = word_tokenize(text.lower())
+    preprocessed_text = []
+    for token in tokens:
+        if token not in punctuation_marks:
+            lemma = morph.parse(token)[0].normal_form
+            if lemma not in stop_words:
+                preprocessed_text.append(lemma)
+    return preprocessed_text
+# Функция для преобразования списка слов в список кодов
+def text_to_sequence(txt, word_to_index):
+    seq = []
+    for word in txt:
+        index = word_to_index.get(word, 1)  # 1 означает неизвестное слово
+        # Неизвестные слова не добавляем в выходную последовательность
+        if index != 1:
+            seq.append(index)
+    return seq
+# Создаем мешок слов
+def vectorize_sequences(sequences, dimension=10000):
+    results = np.zeros((len(sequences), dimension))
+    for i, sequence in enumerate(sequences):
+        for index in sequence:
+            results[i, index] += 1.
+    return results
 
 # Load AI
-nb = joblib.load('native_bayes_lemm.pkl')
-sgd = joblib.load('sgd_lemm.pkl')
-logreg = joblib.load('logistic_regression_lemm.pkl')
-# nb = joblib.load('native_bayes.pkl')
-# sgd = joblib.load('sgd.pkl')
-# logreg = joblib.load('logistic_regression.pkl')
+semantic_native_bayes = joblib.load('./AI/semantic_native_bayes.pkl')
+semantic_sgd = joblib.load('./AI/semantic_sgd.pkl')
+semantic_logistic_regression = joblib.load('./AI/semantic_logistic_regression.pkl')
+sentiment_logistic_regression = joblib.load('./AI/sentiment_logistic_regression.pkl')
 
 # Create your views here.
 class TextView(APIView):
@@ -133,19 +159,27 @@ class Analyze(APIView):
         text2analyze = remove_stop_words(text2analyze)
         # Лемматизируем текст
         text2analyze = lemmatize_text(text2analyze)
+
+        # Обрабатываем текст для ТОНА
+        preprocessed_text = preprocess( text, stop_words, punctuation_marks, morph)
+        seq = text_to_sequence(preprocessed_text, word_to_index)
+        bow = vectorize_sequences([seq], 10000) #max 10000 слов
+
         # Получаем от ИИ предположение
-        nb_pred = nb.predict([text2analyze])  
-        sgd_pred = sgd.predict([text2analyze])
-        logreg_pred = logreg.predict([text2analyze])
+        semantic_native_bayes_pred = semantic_native_bayes.predict([text2analyze])  
+        semantic_sgd_pred = semantic_sgd.predict([text2analyze])
+        semantic_logistic_regression_pred = semantic_logistic_regression.predict([text2analyze])
+        sentiment_logistic_regression_pred = sentiment_logistic_regression.predict_proba(bow)
 
         result = {
-            "nb": nb_pred,
-            "sgd": sgd_pred,
-            "logreg": logreg_pred,
+            "semantic_native_bayes": semantic_native_bayes_pred,
+            "semantic_sgd": semantic_sgd_pred,
+            "semantic_logistic_regression": semantic_logistic_regression_pred,
             "num_symbols": num_symbols,
             "num_symbols_without_space": num_symbols_without_space,
             "num_words": num_words,
             "stop_words": stop_words,
             "dictionary": dictionary,
+            "sentiment": sentiment_logistic_regression_pred,
         }
         return Response(result)
