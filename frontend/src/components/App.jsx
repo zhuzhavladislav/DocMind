@@ -1,21 +1,21 @@
-import { BrowserRouter, Navigate, Routes, Route } from "react-router-dom"
-import { publicRoutes } from "../routes"
+import { BrowserRouter } from "react-router-dom"
+import { AuthProvider } from "../context/AuthContext";
 import './App.css';
+import AppRouter from "./AppRouter";
 import Footer from "./Footer/Footer";
 import Header from "./Header/Header";
 
 const App = () => {
+
   return (
     <>
-      <Header />
       <BrowserRouter>
-        <Routes>
-          {publicRoutes.map(({ path, Component }) => (
-            <Route key={path} path={path} element={Component} />
-          ))}
-        </Routes>
+        <AuthProvider>
+          <Header />
+            <AppRouter />
+          <Footer />
+        </AuthProvider>
       </BrowserRouter>
-      <Footer />
     </>
 
   );

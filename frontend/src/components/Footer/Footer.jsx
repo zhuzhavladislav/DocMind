@@ -1,4 +1,5 @@
 import React from 'react'
+import {Link} from 'react-router-dom'
 import s from './Footer.module.css'
 
 const Footer = () => {
@@ -12,15 +13,15 @@ const Footer = () => {
             </div>
             <hr className={s.footerLine}></hr>
             <div className={s.footerItems}>
-                <a href="">
+                <Link to="/">
                     О проекте
-                </a>
-                <a href="">
+                </Link>
+                <Link to="/">
                     О разработчике
-                </a>
-                <a href="">
+                </Link>
+                <Link to="/">
                     Мобильная версия
-                </a>
+                </Link>
             </div>
             <hr className={s.footerLine}></hr>
             <div className={s.copyright}>

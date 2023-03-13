@@ -26,7 +26,7 @@ button:hover{
     
 }
 p {
-    font-size: 12px;
+    font-size: calc(1.5vmin + 0.5vw);
 }
 th {
     font-size: 12px;

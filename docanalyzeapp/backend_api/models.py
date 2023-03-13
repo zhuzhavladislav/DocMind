@@ -10,5 +10,4 @@ class User_profile(models.Model):
         return str(self.name)
 
 class Text(models.Model):
-    title = models.CharField(max_length=100, default="", blank=True)
     text = models.TextField(max_length=500, default="", blank=True)

@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from .models import *
+from ..models import *
 
 class TextSerializer(serializers.ModelSerializer):
     class Meta:
         model = Text
-        fields = ['title', 'text']  # or fields = '__all__'
+        fields = ['text']  # or fields = '__all__'

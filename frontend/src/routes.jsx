@@ -4,6 +4,12 @@ import Analyzer from "./components/Analyzer/Analyzer"
 
 export const publicRoutes = [
     {
+        path: "/",
+        Component: <Analyzer />
+    },
+]
+export const authRoutes = [
+    {
         path: "/login",
         Component: <Login />
     },
@@ -11,10 +17,6 @@ export const publicRoutes = [
         path: "/register",
         Component: <Register />
     },
-    {
-        path: "/",
-        Component: <Analyzer />
-    }
 ]
 export const privateRoutes = [
     
