@@ -27,7 +27,7 @@ const Analyzer = () => {
   }
 
   return (
-    <div className={s.container}>
+    <main className={s.container}>
       {isLoading ? <div className={s.loading}>Loading</div> : null}
       <h1 style={{ marginTop: 20 }}>Семантический анализ текста <span className={s.highlight}>DocAnalyze</span></h1>
       <div className={s.textAnalyze}>
@@ -117,7 +117,7 @@ const Analyzer = () => {
         :
         null
       }
-    </div>
+    </main>
   )
 }
 

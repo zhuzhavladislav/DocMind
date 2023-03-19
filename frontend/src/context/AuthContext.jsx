@@ -29,10 +29,17 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    const logoutUser = () => {
+        setAuthTokens(null)
+        setUser(null)
+        localStorage.removeItem('authTokens')
+    }
+
     const contextData = {
         user,
         authTokens,
-        loginUser
+        loginUser,
+        logoutUser
     }
 
     return(

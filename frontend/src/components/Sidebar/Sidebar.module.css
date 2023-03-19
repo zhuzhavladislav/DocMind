@@ -1,0 +1,41 @@
+.sidebar{
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.432);
+    z-index: 1;
+}
+.sidebar.hidden{
+    display: none;
+}
+.profile{
+    width: 20vw;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    color: rgb(0, 0, 0);
+    background-color: #e7e7e7;
+}
+.profileHeader{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    background-color:rgb(209, 209, 209);
+    padding: 10px;
+}
+.profileUser{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-bottom: 1px rgb(161, 161, 161) solid;
+}
+.profileUser button{
+    margin: 0;
+}

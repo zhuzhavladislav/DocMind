@@ -7,9 +7,13 @@ header {
     align-items: center;
     justify-content: space-between;
 }
-header img {
-    width: auto;
-    height: 3vw;
+header svg {
+    fill: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+header svg:hover {
+    fill: #f86021;
 }
 header p {
     font-size: 32;
