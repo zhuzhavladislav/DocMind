@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import s from './Analyzer.module.css'
+import st from './Table/Table.module.css'
 import axios from "axios";
-import Table from './Table';
+import Table from './Table/Table';
 
 const Analyzer = () => {
   const [text, setText] = useState("")
@@ -37,27 +38,27 @@ const Analyzer = () => {
       {analyzeInfo ?
         <div style={{ display: "flex", width: "60vw", flexDirection: "column", gap: 20, marginTop: 20, justifyContent: "center", flexWrap: "wrap", transition: "all 0.2s" }} className={s.fade}>
           <div className={s.filter}>
-            {analyzeInfo.dictionary[1] != 0 ? <><input type="radio" id="category1" name="category" value="noStopWords" checked={category =="noStopWords"} onChange={(e) => setCategory(e.target.value)} />
+            {analyzeInfo.dictionary.without_stop_words != 0 ? <><input type="radio" id="category1" name="category" value="noStopWords" checked={category =="noStopWords"} onChange={(e) => setCategory(e.target.value)} />
             <label htmlFor="category1">Без стоп-слов</label></> : null}
-            {analyzeInfo.dictionary[0] != 0 ? <><input type="radio" id="category2" name="category" value="withStopWords" checked={category == "withStopWords"} onChange={(e) => setCategory(e.target.value)} />
+            {analyzeInfo.dictionary.with_stop_words != 0 ? <><input type="radio" id="category2" name="category" value="withStopWords" checked={category == "withStopWords"} onChange={(e) => setCategory(e.target.value)} />
             <label htmlFor="category2">Со стоп-словами</label></> : null}
-            {analyzeInfo.stop_words[0] != 0 ? <><input type="radio" id="category3" name="category" value="stopWords" checked={category == "stopWords"} onChange={(e) => setCategory(e.target.value)} />
+            {analyzeInfo.stop_words.count != 0 ? <><input type="radio" id="category3" name="category" value="stopWords" checked={category == "stopWords"} onChange={(e) => setCategory(e.target.value)} />
             <label htmlFor="category3">Стоп-слова</label></> : null}
-            {analyzeInfo.dictionary[1] != 0 ? <><input type="radio" id="category4" name="category" value="dictionary" checked={category == "dictionary"} onChange={(e) => setCategory(e.target.value)} />
+            {analyzeInfo.dictionary.without_stop_words != 0 ? <><input type="radio" id="category4" name="category" value="dictionary" checked={category == "dictionary"} onChange={(e) => setCategory(e.target.value)} />
             <label htmlFor="category4">Словарь</label></> : null}
           </div>
           <div style={{ display: "flex", flexDirection: "row", gap: 10 }}>
             {category == "noStopWords"
-              ? <Table words={analyzeInfo.dictionary[1]} analyzeInfo={analyzeInfo} />
+              ? <Table words={analyzeInfo.dictionary.without_stop_words} analyzeInfo={analyzeInfo} />
               : category == "withStopWords"
-                ? <Table words={analyzeInfo.dictionary[0]} analyzeInfo={analyzeInfo} />
+                ? <Table words={analyzeInfo.dictionary.with_stop_words} analyzeInfo={analyzeInfo} />
                 : category == "stopWords"
-                  ? <Table words={analyzeInfo.stop_words[0]} analyzeInfo={analyzeInfo} />
+                  ? <Table words={analyzeInfo.stop_words.list} analyzeInfo={analyzeInfo} />
                   : category == "dictionary"
-                    ? <textarea style={{ marginTop: 10 }} value={ analyzeInfo.dictionary[1].map((word, i) => i==0 ? word.word : " " + word.word) }></textarea>
+                    ? <textarea style={{ marginTop: 10 }} defaultValue={ analyzeInfo.dictionary.without_stop_words.map((word, i) => i==0 ? word.word : " " + word.word) }></textarea>
                     : null
             }
-            <table cellPadding="0" cellSpacing="0" border="0" id="table" className={s.table}>
+            <table cellPadding="0" cellSpacing="0" border="0" id="table" className={st.table}>
               <thead>
                 <tr>
                   <th><p>Параметр</p></th>
@@ -79,19 +80,19 @@ const Analyzer = () => {
                 </tr>
                 <tr>
                   <td>Количество стоп-слов<div className={s.hint} data-tooltip="Общее количество слов не несущих информационную нагрузку">?</div></td>
-                  <td>{analyzeInfo.stop_words[1]}</td>
+                  <td>{analyzeInfo.stop_words.count}</td>
                 </tr>
                 <tr>
                   <td>Водность<div className={s.hint} data-tooltip="Показывает процент слов не несущих информационную нагрузку (водность)">?</div></td>
-                  <td>{Math.round(analyzeInfo.stop_words[1] / analyzeInfo.num_words * 100)}%</td>
+                  <td>{Math.round(analyzeInfo.stop_words.count / analyzeInfo.num_words * 100)}%</td>
                 </tr>
                 <tr>
                   <td>Словарь<div className={s.hint} data-tooltip="Количество слов употребляющихся в тексте">?</div></td>
-                  <td>{analyzeInfo.dictionary[0].length}</td>
+                  <td>{analyzeInfo.dictionary.with_stop_words.length}</td>
                 </tr>
                 <tr>
                   <td>Словарь ядра<div className={s.hint} data-tooltip="Количество РАЗНЫХ слов исключая стоп-слова">?</div></td>
-                  <td>{analyzeInfo.dictionary[1].length}</td>
+                  <td>{analyzeInfo.dictionary.without_stop_words.length}</td>
                 </tr>
                 <tr>
                   <td>Тематика<div className={s.hint} data-tooltip="Автоматическое определение тематики">?</div></td>
@@ -101,13 +102,13 @@ const Analyzer = () => {
                 </tr>
                 <tr>
                   <td>Тональность<div className={s.hint} data-tooltip="Выявление в тексте эмоционально окрашенной лексики">?</div></td>
-                  <td>{analyzeInfo.sentiment[0][0] < 0.45
+                  <td>{analyzeInfo.sentiment[0] < 0.45
                     ? "Позитивная"
-                    : analyzeInfo.sentiment[0][0] > 0.55
+                    : analyzeInfo.sentiment[0] > 0.55
                       ? "Негативная"
                       : "Нейтральная"
                   }
-                    <div className={s.hint} data-tooltip={"Негативная (Вероятность: " + Math.round(analyzeInfo.sentiment[0][0] * 100) + "%), Позитивная (Вероятность: " + Math.round(analyzeInfo.sentiment[0][1] * 100) + "%)"}>?</div>
+                    <div className={s.hint} data-tooltip={"Негативная (Вероятность: " + Math.round(analyzeInfo.sentiment[0] * 100) + "%), Позитивная (Вероятность: " + Math.round(analyzeInfo.sentiment[1] * 100) + "%)"}>?</div>
                   </td>
                 </tr>
               </tbody>

@@ -1,13 +1,16 @@
 from django.db import models
-
-# Create your models here.
-class User_profile(models.Model):
-    name = models.CharField(max_length=200, default="", blank=True)
-    email = models.EmailField(max_length=100, default="", blank=True)
-    message=models.TextField(default="",blank=True)
-
-    def __str__(self):
-        return str(self.name)
+from django.contrib.auth.models import User
 
 class Text(models.Model):
-    text = models.TextField(max_length=500, default="", blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    text = models.TextField(max_length=500, default="", blank=False)
+    semantic_native_bayes = models.CharField(max_length=20, default="", blank=False)
+    semantic_sgd = models.CharField(max_length=20, default="", blank=False)
+    semantic_logistic_regression = models.CharField(max_length=20, default="", blank=False)
+    num_symbols = models.PositiveIntegerField(default=0, blank=False)
+    num_symbols_without_space = models.PositiveIntegerField(default=0, blank=False)
+    num_words = models.PositiveIntegerField(default=0, blank=False)
+    stop_words = models.JSONField(default=dict, blank=False)
+    dictionary = models.JSONField(default=dict, blank=False)
+    sentiment_logistic_regression = models.JSONField(default=dict, blank=False)
+    date = models.DateTimeField(auto_now_add=True, blank=False)

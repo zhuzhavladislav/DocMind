@@ -1,12 +1,14 @@
 
 from .serializers import *
 from ..models import *
+from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 from pymystem3 import Mystem
 import pymorphy2
 import joblib
@@ -100,7 +102,7 @@ def dictionary_generate(text):
 
     for key, value in word_count.items():
         dictionary_core_result.append({"word": key, "count": value})
-    return [dictionary_result or 0, dictionary_core_result or 0]
+    return {"with_stop_words": dictionary_result or 0, "without_stop_words": dictionary_core_result or 0}
 
 # Поиск стоп-слов
 def find_stop_words(text):
@@ -117,7 +119,7 @@ def find_stop_words(text):
     result = []
     for key, value in word_count.items():
         result.append({"word": key, "count": value})
-    return [result or 0, count]
+    return {"list": result or 0, "count": count}
 
 # Удаление стоп-слов
 def remove_stop_words(text):
@@ -165,20 +167,32 @@ sentiment_logistic_regression = joblib.load(
     './AI/sentiment_logistic_regression.pkl')
 
 # Create your views here.
-class TextView(APIView):
+@permission_classes([IsAuthenticated])
+class UserTexts(APIView):
     def get(self, request):
-        output = [
-            {
-                "text": output.text
-            } for output in Text.objects.all()
-        ]
-        return Response(output)
+        user=request.user
+        texts = user.text_set.all()
+        serializer = TextSerializer(texts, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
-        serializers = TextSerializer(data=request.data)
-        if serializers.is_valid(raise_exception=True):
-            serializers.save()
-            return Response(serializers.data)
+        serializer = TextSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        
+
+@permission_classes([IsAuthenticated])
+class UserText(APIView):
+    def get(self, request, text_num):
+        try:
+            user = request.user
+            text = user.text_set.get(id=text_num)
+        except Text.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        serializer = TextSerializer(text)
+        return Response(serializer.data)
 
 # Тематический анализ текста, полученного от фронтэнда
 class Analyze(APIView):
@@ -210,25 +224,23 @@ class Analyze(APIView):
         bow = vectorize_sequences([seq], 10000)  # max 10000 слов
 
         # Получаем от ИИ предположение
-        semantic_native_bayes_pred = semantic_native_bayes.predict([
-                                                                   text2analyze])
+        semantic_native_bayes_pred = semantic_native_bayes.predict([text2analyze])
         semantic_sgd_pred = semantic_sgd.predict([text2analyze])
-        semantic_logistic_regression_pred = semantic_logistic_regression.predict([
-                                                                                 text2analyze])
+        semantic_logistic_regression_pred = semantic_logistic_regression.predict([text2analyze])
         sentiment_logistic_regression_pred = sentiment_logistic_regression.predict_proba(
             bow)
         if (text2analyze == ""):
             result = 0
         else:
             result = {
-                "semantic_native_bayes": semantic_native_bayes_pred,
-                "semantic_sgd": semantic_sgd_pred,
-                "semantic_logistic_regression": semantic_logistic_regression_pred,
+                "semantic_native_bayes": semantic_native_bayes_pred[0],
+                "semantic_sgd": semantic_sgd_pred[0],
+                "semantic_logistic_regression": semantic_logistic_regression_pred[0],
                 "num_symbols": num_symbols,
                 "num_symbols_without_space": num_symbols_without_space,
                 "num_words": num_words,
                 "stop_words": stop_words,
                 "dictionary": dictionary,
-                "sentiment": sentiment_logistic_regression_pred,
+                "sentiment": sentiment_logistic_regression_pred[0],
             }
         return Response(result)

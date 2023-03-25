@@ -6,9 +6,9 @@ const AuthContext = createContext()
 export default AuthContext
 
 export const AuthProvider = ({children}) => {
-    
     const [authTokens, setAuthTokens] = useState(() => localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
     const [user, setUser] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')).username : null)
+    const [loading, setLoading] = useState(true)
 
     const loginUser = async (e) => {
         e.preventDefault()
@@ -35,12 +35,41 @@ export const AuthProvider = ({children}) => {
         localStorage.removeItem('authTokens')
     }
 
+    const updateToken = async () =>{
+        const response = await fetch('http://localhost:8000/api/token/refresh/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 'refresh': authTokens.refresh })
+        })
+        const data = await response.json()
+
+        if (response.status === 200){
+            setAuthTokens(data)
+            setUser(jwt_decode(data.access).username)
+            localStorage.setItem('authTokens', JSON.stringify(data))
+        } else {
+            logoutUser()
+        }
+    }
+
     const contextData = {
         user,
         authTokens,
         loginUser,
         logoutUser
     }
+
+    useEffect(()=>{
+        const refreshTime = 1000*60*5
+        const interval = setInterval(()=>{
+            if(authTokens){
+                updateToken()
+            }
+        }, refreshTime)
+        return ()=> clearInterval(interval)
+    },[authTokens, loading])
 
     return(
         <AuthContext.Provider value={contextData}>

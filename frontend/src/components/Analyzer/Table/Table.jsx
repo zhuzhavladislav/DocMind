@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from 'react'
-import first from "../../images/first.gif"
-import previous from "../../images/previous.gif"
-import next from "../../images/next.gif"
-import last from "../../images/last.gif"
-import s from './Analyzer.module.css'
+import first from "../../../images/first.gif"
+import previous from "../../../images/previous.gif"
+import next from "../../../images/next.gif"
+import last from "../../../images/last.gif"
+import s from './Table.module.css'
 
 const Table = (props) => {
     const [sortColumn, setSortColumn] = useState(null)
@@ -53,7 +53,7 @@ const Table = (props) => {
                             <td>{i+1}</td>
                             <td>{word.word}</td>
                             <td>{word.count}</td>
-                            <td>{(word.count * 100 / props.analyzeInfo.dictionary[1].length).toFixed(1)}%</td>
+                            <td>{(word.count * 100 / props.analyzeInfo.dictionary.without_stop_words.length).toFixed(1)}%</td>
                             <td>{(word.count * 100 / props.analyzeInfo.num_words).toFixed(1)}%</td>
                         </tr>
                     )) : null}
@@ -74,7 +74,7 @@ const Table = (props) => {
                     <img src={next} style={{ width: 16, height: 16, cursor: "pointer" }} alt="Next Page" onClick={() => setPage(page >= pageCount-1 ? pageCount-1 : page + 1)} />
                     <img src={last} style={{ width: 16, height: 16, cursor: "pointer" }} alt="Last Page" onClick={()=>setPage(pageCount-1)} />
                 </div>
-                <div id="text">Страница: <span id="currentpage">{page+1}</span> из <span id="pagelimit">{pageCount}</span></div>
+                <div>Страница: <span id="currentpage">{page+1}</span> из <span id="pagelimit">{pageCount}</span></div>
             </div>
         </div>
     )

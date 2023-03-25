@@ -5,7 +5,6 @@ import { Navigate, Routes, Route } from "react-router-dom"
 
 const AppRouter = () => {
     const { user } = useContext(AuthContext)
-    console.log(user);
     return (
         <Routes>
             {publicRoutes.map(({ path, Component }) => (

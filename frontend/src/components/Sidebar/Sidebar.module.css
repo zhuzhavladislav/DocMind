@@ -26,7 +26,7 @@
     background-color:rgb(209, 209, 209);
     padding: 10px;
 }
-.profileUser{
+.profileSection{
     display: flex;
     flex-direction: column;
     gap: 15px;
@@ -36,6 +36,9 @@
     padding-right: 10px;
     border-bottom: 1px rgb(161, 161, 161) solid;
 }
-.profileUser button{
+.profileSection button{
     margin: 0;
+}
+.textCard{
+    
 }
