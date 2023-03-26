@@ -8,6 +8,7 @@ export default AuthContext
 export const AuthProvider = ({children}) => {
     const [authTokens, setAuthTokens] = useState(() => localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
     const [user, setUser] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')).username : null)
+    const [id, setId] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')).id : null)
     const [loading, setLoading] = useState(true)
 
     const loginUser = async (e) => {
@@ -23,6 +24,7 @@ export const AuthProvider = ({children}) => {
         if(response.status === 200){
             setAuthTokens(data)
             setUser(jwt_decode(data.access).username)
+            setId(jwt_decode(data.access).id)
             localStorage.setItem('authTokens', JSON.stringify(data))
         } else {
             alert(response.status)
@@ -32,6 +34,7 @@ export const AuthProvider = ({children}) => {
     const logoutUser = () => {
         setAuthTokens(null)
         setUser(null)
+        setId(null)
         localStorage.removeItem('authTokens')
     }
 
@@ -48,20 +51,29 @@ export const AuthProvider = ({children}) => {
         if (response.status === 200){
             setAuthTokens(data)
             setUser(jwt_decode(data.access).username)
+            setId(jwt_decode(data.access).id)
             localStorage.setItem('authTokens', JSON.stringify(data))
         } else {
             logoutUser()
+        }
+        if(loading){
+            setLoading(false)
         }
     }
 
     const contextData = {
         user,
         authTokens,
+        id,
         loginUser,
         logoutUser
     }
 
     useEffect(()=>{
+        if(loading && authTokens){
+            updateToken()
+        }
+
         const refreshTime = 1000*60*5
         const interval = setInterval(()=>{
             if(authTokens){

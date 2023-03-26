@@ -1,5 +1,5 @@
 import React, {useContext} from 'react'
-import { authRoutes, publicRoutes } from "../routes"
+import { authRoutes, privateRoutes, publicRoutes } from "../routes"
 import AuthContext from "../context/AuthContext";
 import { Navigate, Routes, Route } from "react-router-dom"
 
@@ -12,6 +12,10 @@ const AppRouter = () => {
             ))}
 
             {!user ? authRoutes.map(({ path, Component }) => (
+                <Route key={path} path={path} element={Component} />
+            )) : null}
+
+            {user ? privateRoutes.map(({ path, Component }) => (
                 <Route key={path} path={path} element={Component} />
             )) : null}
 

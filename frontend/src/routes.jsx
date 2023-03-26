@@ -1,5 +1,4 @@
-import Login from "./components/Login/Login"
-import Register from "./components/Register/Register"
+import Account from './components/Account/Account'
 import Analyzer from "./components/Analyzer/Analyzer"
 
 export const publicRoutes = [
@@ -9,15 +8,11 @@ export const publicRoutes = [
     },
 ]
 export const authRoutes = [
-    {
-        path: "/login",
-        Component: <Login />
-    },
-    {
-        path: "/register",
-        Component: <Register />
-    },
+
 ]
 export const privateRoutes = [
-    
+    {
+        path: "/account",
+        Component: <Account />
+    },
 ]

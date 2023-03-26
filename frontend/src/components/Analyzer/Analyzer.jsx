@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import s from './Analyzer.module.css'
 import st from './Table/Table.module.css'
 import axios from "axios";
 import Table from './Table/Table';
+import AuthContext from '../../context/AuthContext';
+import SidebarContext from '../../context/SidebarContext';
 
 const Analyzer = () => {
+  const {user, id, authTokens, logoutUser} = useContext(AuthContext)
+  const {textFromSidebar} = useContext(SidebarContext)
   const [text, setText] = useState("")
   const [analyzeInfo, setAnalyzeInfo] = useState()
   const [category, setCategory] = useState("noStopWords")
   const [isLoading, setIsLoading] = useState(false)
 
   //Формируем POST запрос к серверу Django, и получаем ответ в виде данных
-  const analyze = () => {
+  const analyzeText = () => {
     setIsLoading(true)
     const data = new FormData()
     data.append('text', text)
@@ -27,13 +31,44 @@ const Analyzer = () => {
       });
   }
 
+  const saveText = async () => {
+    setIsLoading(true)
+    if (authTokens) {
+      const response = await fetch('http://localhost:8000/api/texts/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + String(authTokens.access)
+        },
+        body: JSON.stringify({ ...analyzeInfo, user: id, text})
+      })
+      if (response.ok) {
+        setIsLoading(false)
+      } else {
+        setIsLoading(false)
+      }
+    } else {
+      logoutUser()
+    }
+  }
+
+  useEffect(()=>{
+    if (textFromSidebar){
+      setText(textFromSidebar.text)
+      setAnalyzeInfo(textFromSidebar)
+    }
+  }, [textFromSidebar])
+
   return (
     <main className={s.container}>
       {isLoading ? <div className={s.loading}>Loading</div> : null}
       <h1 style={{ marginTop: 20 }}>Семантический анализ текста <span className={s.highlight}>DocAnalyze</span></h1>
       <div className={s.textAnalyze}>
-        <textarea id="text" name="text" className={s.textInput} placeholder="Напишите текст..." onChange={e => setText(e.target.value)}></textarea>
-        <button onClick={analyze}>Проанализировать</button>
+        <textarea id="text" name="text" className={s.textInput} placeholder="Напишите текст..." value={text} onChange={e => setText(e.target.value)}></textarea>
+        <div style={{display: "flex", gap: 20}}>
+          <button onClick={analyzeText}>Проанализировать</button>
+          {user && analyzeInfo ? <button onClick={saveText}>Сохранить результат</button> : null}
+        </div>
       </div>
       {analyzeInfo ?
         <div style={{ display: "flex", width: "60vw", flexDirection: "column", gap: 20, marginTop: 20, justifyContent: "center", flexWrap: "wrap", transition: "all 0.2s" }} className={s.fade}>
