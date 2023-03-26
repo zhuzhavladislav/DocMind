@@ -7,6 +7,7 @@ urlpatterns = [
     path('analyze/', Analyze.as_view(), name='text_analyze'),
     path('texts/', UserTexts.as_view(), name="User's texts"),
     path('texts/<int:text_num>/', UserText.as_view(), name="User's text"),
+    path('register/', RegisterUser.as_view(), name="Register"),
     path('token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

@@ -14,6 +14,23 @@ const Sidebar = () => {
         getTexts()
     }, [user, handleSidebar])
 
+    const registerUser = async (e) => {
+        e.preventDefault()
+        const response = await fetch('http://localhost:8000/api/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({'email': e.target.email.value, 'username': e.target.username.value, 'password': e.target.password.value})
+        })
+        const data = await response.json()
+        if (response.status === 200) {
+            alert("Регистрация прошла успешно")
+        } else {
+            alert(data)
+        }
+    }
+
     const getTexts = async () => {
         if (authTokens) {
             const response = await fetch('http://localhost:8000/api/texts/', {
@@ -50,18 +67,32 @@ const Sidebar = () => {
                             <button className={s.button} onClick={logoutUser}>Выйти из аккаунта</button>
                         </>
                         :
-                        <form onSubmit={loginUser} className={s.loginForm}>
-                            <input required type="text" name="username" placeholder='Введите имя пользователя' className={s.input}/>
-                            <input required type="password" name='password' placeholder='Введите пароль' className={s.input} />
-                            <input type="submit" className={s.button} value="Войти" />
-                        </form>
+                        <div style={{display: "flex", flexDirection: "column", gap: 30}}>
+                            <div style={{display: "flex", flexDirection: "column", gap: 10}}>
+                                <p>Войдите</p>
+                                <form onSubmit={loginUser} className={s.loginForm}>
+                                    <input required type="text" name="username" placeholder='Введите имя пользователя' className={s.input} />
+                                    <input required type="password" name='password' placeholder='Введите пароль' className={s.input} />
+                                    <input type="submit" className={s.button} value="Войти" />
+                                </form>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                <p>Или зарегистрируйтесь</p>
+                                <form onSubmit={registerUser} className={s.loginForm}>
+                                    <input required type="email" name="email" placeholder='Введите email' className={s.input} />
+                                    <input required type="text" name="username" placeholder='Введите имя пользователя' className={s.input} />
+                                    <input required type="password" name='password' placeholder='Введите пароль' className={s.input} />
+                                    <input type="submit" className={s.button} value="Зарегистрироваться" />
+                                </form>
+                            </div>
+                        </div>
                     }
                 </div>
                 {texts && texts.length != 0 ? <div className={s.textsSection}>
                     <p className={s.title}>Сохраненные результаты</p>
                     <div className={s.textsList}>
                         {texts.map(text => (
-                            <TextCard key={text.id} text={text}/>
+                            <TextCard getTexts={getTexts} key={text.id} text={text}/>
                         ))}
                     </div>
                 </div> : null}

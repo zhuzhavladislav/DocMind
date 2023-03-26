@@ -1,5 +1,4 @@
 .textCard {
-  cursor: pointer;
   position: relative;
   display: flex;
   justify-content: center;
@@ -35,6 +34,20 @@
   transform: scale(0.95);
   opacity: 0.5;
   transition: 0.9s;
+}
+.delete{
+  cursor: pointer;
+  fill: black;
+  stroke: black;
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 99;
+  transition: 0.2s all;
+}
+.delete:hover{
+  fill: #f86021;
+  stroke: #f86021;
 }
 .text{
   overflow: hidden;
@@ -79,4 +92,34 @@
   line-height: 30px;
   position: absolute;
   padding-right: 5px;
+}
+
+.load {
+  cursor: pointer;
+  display: grid;
+  width: min-content;
+  min-width: 80px;
+  height: 20px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 5px;
+  border: 1px solid black;
+  overflow: hidden;
+  position: relative;
+  z-index: 99;
+  transition: all 0.2s;
+}
+.load p{
+  justify-self: center;
+  align-self: center;
+  font-size: calc(0.7vmin + 0.5vw);
+  color: black;
+  transition: all 0.2s;
+}
+.load:hover{
+  background-color:#f86021;
+  border-color: #f86021;
+}
+.load:hover p{
+  color:#ffffff;
 }

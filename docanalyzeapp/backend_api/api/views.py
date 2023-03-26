@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.shortcuts import render
+from django.contrib.auth.hashers import make_password
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from pymystem3 import Mystem
@@ -194,6 +195,36 @@ class UserText(APIView):
 
         serializer = TextSerializer(text)
         return Response(serializer.data)
+    def delete(self, request, text_num):
+        try:
+            user = request.user
+            text = user.text_set.get(id=text_num)
+        except Text.DoesNotExist:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+
+        text.delete()  # удаление текста из базы данных
+
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+
+class RegisterUser(APIView):
+    def post(self, request):
+        if request.method == 'POST':
+            username = request.data.get('username')
+            email = request.data.get('email')
+            password = request.data.get('password')
+            if not username or not password or not email:
+                return Response({'error': 'Please provide all required fields'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            try:
+                user = User.objects.create(
+                    username=username, email=email, password=make_password(password))
+                user.save()
+            except:
+                return Response({'error': 'User with this email already exists.'},
+                                status=status.HTTP_400_BAD_REQUEST)
+            return Response({'success': 'User created successfully.'},
+                            status=status.HTTP_201_CREATED)
 
 # Тематический анализ текста, полученного от фронтэнда
 class Analyze(APIView):

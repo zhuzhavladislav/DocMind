@@ -1,7 +1,6 @@
 import React, {useEffect, useContext, useState} from 'react'
 import AuthContext from '../../context/AuthContext'
 import s from './Account.module.css'
-import TextCard from '../Sidebar/TextCard/TextCard'
 
 const Account = () => {
   const { user, authTokens } = useContext(AuthContext)
@@ -32,14 +31,14 @@ const Account = () => {
   }
   return (
     <main>
-      {texts && texts.length != 0 ? <div className={s.textsSection}>
+      {/* {texts && texts.length != 0 ? <div className={s.textsSection}>
         <p className={s.title}>Сохраненные результаты</p>
         <div className={s.textsList}>
           {texts.map(text => (
             <TextCard key={text.id} text={text} />
           ))}
         </div>
-      </div> : null}
+      </div> : null} */}
     </main>
   )
 }
