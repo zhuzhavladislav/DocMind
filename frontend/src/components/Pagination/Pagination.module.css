@@ -1,0 +1,30 @@
+.paginationButton{
+    display: flex;
+    cursor: pointer;
+    width: 2vw;
+    height: 2vw;
+    min-width: 20px;
+    min-height: 20px;
+    padding: 0;
+    margin: 0;
+    border-style: solid;
+    border-radius: 50%;
+    border-width: 1px;
+    border-color: #1d2120;
+    font-size: calc(0.4vmin + 0.6vw);
+    font-weight: 300;
+    transition: 0.2s;
+    justify-content: center;
+    align-items: center;
+}
+.paginationButton.active{
+    cursor: pointer;
+    border-color: #f86021;
+    background-color: #f86021;
+    color: white;
+}
+.paginationButton:hover{
+    border-color: #f86021;
+    background-color: #f86021;
+    color: white;
+}

@@ -5,9 +5,7 @@
     flex-direction: column;
     gap: 10px;
     padding-top: 20px;
-    padding-bottom: 200px;
-    padding-left: 20%;
-    padding-right: 20%;
+    align-items: center;
 }
 .title{
     margin-left: 5px;
@@ -17,5 +15,6 @@
 }
 .textsList{
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
+    width: 60vw;
 }

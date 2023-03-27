@@ -29,9 +29,13 @@
     height: 100%;
     background-color: rgba(0, 0, 0, 0.432);
     z-index: 1;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
 }
-.sidebar.hidden{
-    display: none;
+.sidebar.show{
+    opacity: 1;
+    visibility: visible;
 }
 .profile{
     width: 20vw;
@@ -120,5 +124,5 @@
 }
 .textsList{
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: column;
 }

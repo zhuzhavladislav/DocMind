@@ -1,4 +1,5 @@
-
+import io
+from docx import Document  # библиотека для работы с .docx файлами
 from .serializers import *
 from ..models import *
 from rest_framework import status
@@ -58,6 +59,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
 #     return Response(routes)
 
 # ---Семантический анализ---#
+ 
 # Удаление знаков препинаний
 def remove_punctuation(text):
     return "".join([ch if ch not in string.punctuation and ch not in punctuation_marks else ' ' for ch in text])
@@ -173,7 +175,7 @@ sentiment_logistic_regression = joblib.load(
 class UserTexts(APIView):
     def get(self, request):
         user=request.user
-        texts = user.text_set.all()
+        texts = user.text_set.all().order_by('-id')
         serializer = TextSerializer(texts, many=True)
         return Response(serializer.data)
 
@@ -214,23 +216,48 @@ class RegisterUser(APIView):
             email = request.data.get('email')
             password = request.data.get('password')
             if not username or not password or not email:
-                return Response({'error': 'Please provide all required fields'},
+                return Response('Пожалуйста заполните все поля!',
                                 status=status.HTTP_400_BAD_REQUEST)
             try:
                 user = User.objects.create(
                     username=username, email=email, password=make_password(password))
                 user.save()
             except:
-                return Response({'error': 'User with this email already exists.'},
+                return Response({'Пользователь с данным логином существует.'},
                                 status=status.HTTP_400_BAD_REQUEST)
-            return Response({'success': 'User created successfully.'},
+            return Response('Регистрация прошла успешно.',
                             status=status.HTTP_201_CREATED)
 
 # Тематический анализ текста, полученного от фронтэнда
 class Analyze(APIView):
     def post(self, request):
+
         # Получаем текст от фронтенда
-        text = request.POST.get('text', 'default')
+        if 'file' in request.FILES:  # Если входные данные - файл
+            file = request.FILES['file']
+            filename = file.name.lower()
+
+            # Проверяем формат файла
+            if filename.endswith('.txt'):
+                # Получаем текст из файла
+                text = file.read().decode('utf-8')
+            elif filename.endswith('.doc') or filename.endswith('.docx'):
+                # Получаем текст из файла формата .doc/.docx
+                doc = Document(io.BytesIO(file.read()))
+                text = '\n'.join(
+                    [paragraph.text for paragraph in doc.paragraphs])
+            else:
+                # Неверный формат файла
+                return Response('Неверный формат файла')
+        elif 'text' in request.POST:  # Если входные данные - текст
+            text = request.POST['text']
+        elif 'text' in request.data:  # Если входные данные переданы через тело POST-запроса
+            text = request.data['text']
+        else:
+            text = ""
+
+            
+
         # Считаем количество симоволов
         num_symbols = len([i for i in text if i != "\n"])
         # Считаем количество символов без пробела
@@ -265,6 +292,7 @@ class Analyze(APIView):
             result = 0
         else:
             result = {
+                "text": text,
                 "semantic_native_bayes": semantic_native_bayes_pred[0],
                 "semantic_sgd": semantic_sgd_pred[0],
                 "semantic_logistic_regression": semantic_logistic_regression_pred[0],

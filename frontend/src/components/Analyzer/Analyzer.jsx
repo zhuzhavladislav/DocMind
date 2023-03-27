@@ -1,10 +1,11 @@
-import React, { useEffect, useState, useContext } from 'react'
+import React, { useEffect, useState, useContext, useRef } from 'react'
 import s from './Analyzer.module.css'
 import st from './Table/Table.module.css'
 import axios from "axios";
 import Table from './Table/Table';
 import AuthContext from '../../context/AuthContext';
 import SidebarContext from '../../context/SidebarContext';
+import loader from '../../images/loop-loading.gif'
 
 const Analyzer = () => {
   const {user, id, authTokens, logoutUser} = useContext(AuthContext)
@@ -14,22 +15,40 @@ const Analyzer = () => {
   const [category, setCategory] = useState("noStopWords")
   const [isLoading, setIsLoading] = useState(false)
 
+  const formRef = useRef(null);
+
   //Формируем POST запрос к серверу Django, и получаем ответ в виде данных
-  const analyzeText = () => {
+  const analyzeText = (e) => {
     setIsLoading(true)
-    const data = new FormData()
-    data.append('text', text)
+    const data = new FormData();
+    if (e.target.files && e.target.files.length > 0) {
+      // Файл был выбран, отправляем его содержимое на сервер
+      const file = e.target.files[0];
+      data.append('file', file);
+    } else if (text != "") {
+      // Текст был введен пользователем, отправляем его на сервер
+      data.append('text', text);
+    } else {
+      // Если ни файл, ни текст не были введены, выходим из функции
+      setIsLoading(false);
+      return;
+    }
+
+    // Отправляем данные на сервер
     axios
-      .post("http://localhost:8000/api/analyze/", data)
-      .then(res => {
-        setAnalyzeInfo(res.data)
-        setIsLoading(false)
+      .post('http://localhost:8000/api/analyze/', data)
+      .then((res) => {
+        setAnalyzeInfo(res.data);
+        setText(res.data.text)
+        formRef.current.reset();
+        setIsLoading(false);
       })
-      .catch(err => {
-        setIsLoading(false)
-        alert(err)
+      .catch((err) => {
+        setIsLoading(false);
+        alert(err);
       });
   }
+
 
   const saveText = async () => {
     setIsLoading(true)
@@ -61,17 +80,28 @@ const Analyzer = () => {
 
   return (
     <main className={s.container}>
-      {isLoading ? <div className={s.loading}>Loading</div> : null}
-      <h1 style={{ marginTop: 20 }}>Семантический анализ текста <span className={s.highlight}>DocAnalyze</span></h1>
+      <div className={isLoading ? `${s.loading} ${s.fade} ${s.show}` : `${s.loading} ${s.fade}`}><img alt="loading" src={loader} /></div>
+      <h1 style={{ marginTop: 20 }}>Семантический анализ текста DocAnalyze</h1> 
+      <div className={s.inputFiles}>
+        <form ref={formRef}>
+          <input className={s.inputFile + " " +s.inputFile1} type="file" accept=".txt, .doc, .docx" name="file1" id="file1" onChange={(e) => { setText(""); analyzeText(e) }} />
+          <label className={s.inputFileLabel + " " + s.inputFileLabel1} htmlFor="file1">Текстовый файл (.txt, .doc)</label>
+        </form>
+        <form ref={formRef}>
+          <input className={s.inputFile + " " + s.inputFile2} type="file" name="file2" id="file2" onChange={(e) => { setText(""); analyzeText(e) }} />
+          <label className={s.inputFileLabel + " " + s.inputFileLabel2} htmlFor="file2" >Аудиофайл (.mp3, .wav)</label>
+        </form>
+      </div>
       <div className={s.textAnalyze}>
-        <textarea id="text" name="text" className={s.textInput} placeholder="Напишите текст..." value={text} onChange={e => setText(e.target.value)}></textarea>
+        <textarea id="text" name="text" className={s.textInput} placeholder="Или можете ввести текст вручную..." value={text} onChange={e => {setText(e.target.value); setAnalyzeInfo()}}></textarea>
         <div style={{display: "flex", gap: 20}}>
-          <button onClick={analyzeText}>Проанализировать</button>
-          {user && analyzeInfo ? <button onClick={saveText}>Сохранить результат</button> : null}
+          <button onClick={analyzeText} className={s.button}>Проанализировать</button>
+          {analyzeInfo ? <button onClick={() => { setText(""); setAnalyzeInfo(); formRef.current.reset(); }} className={s.button}>Очистить результат</button> : null}
+          {user && analyzeInfo ? <button onClick={saveText} className={s.button}>Сохранить результат</button> : null}
         </div>
       </div>
       {analyzeInfo ?
-        <div style={{ display: "flex", width: "60vw", flexDirection: "column", gap: 20, marginTop: 20, justifyContent: "center", flexWrap: "wrap", transition: "all 0.2s" }} className={s.fade}>
+        <div className={s.analyzeInfo}>
           <div className={s.filter}>
             {analyzeInfo.dictionary.without_stop_words != 0 ? <><input type="radio" id="category1" name="category" value="noStopWords" checked={category =="noStopWords"} onChange={(e) => setCategory(e.target.value)} />
             <label htmlFor="category1">Без стоп-слов</label></> : null}

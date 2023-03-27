@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from 'react'
 import { Link, Navigate } from 'react-router-dom'
 import AuthContext from '../../context/AuthContext'
 import SidebarContext from '../../context/SidebarContext'
+import Pagination from '../Pagination/Pagination'
 import s from './Sidebar.module.css'
 import TextCard from './TextCard/TextCard'
 
@@ -10,9 +11,40 @@ const Sidebar = () => {
     const { sidebar, handleSidebar } = useContext(SidebarContext)
     const [texts, setTexts] = useState()
 
+    const [pageSize, setPageSize] = useState(3)
+    const [pageNumber, setPageNumber] = useState(1);
+    const [maxPages, setMaxPages] = useState(1)
+    const [startIndex, setStartIndex] = useState(1)
+    const [pageItems, setPageItems] = useState()
+
     useEffect(() => {
+        //Получение текстов при открытии сайдбара или входе
         getTexts()
     }, [user, handleSidebar])
+
+    useEffect(()=>{
+        //Пагинация
+        //Если тексты загрузились
+        if(texts){
+            //Вычисляем максимальное количество страниц
+            setMaxPages(Math.ceil(texts.length / pageSize))
+            //Вычисляем начальный элемент на странице
+            setStartIndex((pageNumber - 1) * pageSize)
+            //Устанавливаем элементы на странице
+            setPageItems(texts.slice(startIndex, startIndex + pageSize))
+        } 
+    }, [texts, startIndex, pageSize, pageNumber])
+
+    useEffect(()=>{
+        if (pageNumber > 1 && pageItems.length === 0) {
+            // Если на текущей странице не осталось элементов, то переключиться на предыдущую страницу
+            setPageNumber(pageNumber - 1);
+        }
+    },[pageItems])
+
+    const onPageChange = (pageNumber) => {
+        setPageNumber(pageNumber)
+    }
 
     const registerUser = async (e) => {
         e.preventDefault()
@@ -23,12 +55,8 @@ const Sidebar = () => {
             },
             body: JSON.stringify({'email': e.target.email.value, 'username': e.target.username.value, 'password': e.target.password.value})
         })
-        const data = await response.json()
-        if (response.status === 200) {
-            alert("Регистрация прошла успешно")
-        } else {
-            alert(data)
-        }
+        const textResponse = await response.json();
+        alert(textResponse)
     }
 
     const getTexts = async () => {
@@ -52,7 +80,7 @@ const Sidebar = () => {
     }
 
     return (
-        <div className={s.sidebar + " " + (sidebar ? null : s.hidden)}>
+        <div className={s.sidebar + " " + (sidebar ? s.show : null)}>
             <div className={s.profile}>
                 <div className={s.profileHeader}>
                     <p>Меню</p>
@@ -88,14 +116,18 @@ const Sidebar = () => {
                         </div>
                     }
                 </div>
-                {texts && texts.length != 0 ? <div className={s.textsSection}>
-                    <p className={s.title}>Сохраненные результаты</p>
-                    <div className={s.textsList}>
-                        {texts.map(text => (
-                            <TextCard getTexts={getTexts} key={text.id} text={text}/>
-                        ))}
+                {user && pageItems && pageItems.length != 0 ?
+                    <div className={s.textsSection}>
+                        <p className={s.title}>Сохраненные результаты</p>
+                        <div className={s.textsList}>
+                            {pageItems.map((text) => (
+                                <TextCard getTexts={getTexts} onPageChange={onPageChange} pageNumber={pageNumber} key={text.id} text={text}/>
+                            ))}
+                        </div>
+                        <Pagination pageNumber={pageNumber} onPageChange={onPageChange} maxPages={maxPages}/>
                     </div>
-                </div> : null}
+                    : null
+                }
             </div>
         </div>
     )

@@ -28,9 +28,9 @@
 }
 button{
     cursor: pointer;
-    background-color: black;
+    background-color: #363636;
     color: white;
-    font-size: 16px;
+    font-size: calc(1vmin + 0.5vw);
     border-color: transparent;
     border-radius: 20px;
     padding-left: 25px;
@@ -55,8 +55,8 @@ td {
     font-size: 12px;
 }
 h1 {
-    font-size: calc(2.5vmin + 0.5vw);
-    font-weight: 900;
+    font-size: calc(2vmin + 1vw);
+    font-weight: 400;
 }
 
 h2 {

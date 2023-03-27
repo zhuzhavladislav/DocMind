@@ -8,8 +8,8 @@ footer {
     padding-bottom: 20px;
     padding-left: 20%;
     padding-right: 20%;
-    background-color: black;
-    color: white;
+    background-color: #f5f5f5;
+    color: #363636;
     align-items: center;
 }
 footer img {
@@ -19,7 +19,7 @@ footer img {
 footer p {
     font-size: 32;
     font-weight: 900;
-    color: #fff;
+    color: #363636;
     font-size: calc(3vmin + 0.2vw);
 }
 .footerTop {
@@ -35,7 +35,7 @@ footer p {
 .footerLine{
     width: auto;
     height: 0.1px;
-    background-color:white;
+    background-color: #363636;
 
 }
 .footerItems {
@@ -45,7 +45,7 @@ footer p {
 .footerItems a {
     text-decoration: none;
     text-align: center;
-    color: white;
+    color: #363636;
     position: relative;
     font-size: calc(1.8vmin + 0.1vw);
     transition: 0.2s;

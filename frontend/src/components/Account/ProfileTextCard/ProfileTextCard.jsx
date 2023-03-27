@@ -1,9 +1,10 @@
 import React, { useContext } from 'react'
+import {Link} from 'react-router-dom'
 import AuthContext from '../../../context/AuthContext';
 import SidebarContext from '../../../context/SidebarContext';
-import s from './TextCard.module.css'
+import s from './ProfileTextCard.module.css'
 
-const TextCard = ({ text, getTexts, onPageChange, pageNumber }) => {
+const ProfileTextCard = ({ text, getTexts, onPageChange, pageNumber }) => {
     const { setTextFromSidebar } = useContext(SidebarContext)
     const {authTokens} = useContext(AuthContext)
 
@@ -51,13 +52,13 @@ const TextCard = ({ text, getTexts, onPageChange, pageNumber }) => {
                     }</p>
                     <span style={{ width: "100%", backgroundColor: text.sentiment[0] > 0.55 ? "lightcoral" : text.sentiment[0] < 0.45 ? "darkseagreen" : "lightgray" }}></span>
                 </div>
-                <div className={s.load} onClick={() => setTextFromSidebar(text)}>
+                <Link to="/" className={s.load} onClick={() => setTextFromSidebar(text)}>
                     <p>Загрузить</p>
-                </div>
+                </Link>
             </div>
 
         </div>
     )
 }
 
-export default TextCard
+export default ProfileTextCard

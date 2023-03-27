@@ -6,58 +6,18 @@
   border-bottom: none;
 }
 .table th {
-  background: black;
+  background: #363636;
   text-align: left;
   color: white;
   padding: 4px 6px 6px;
   border: 1px solid #fff;
   border-right: none;
 }
-.table th h3 {
-  font-size: 10px;
-  padding: 6px 8px 8px;
-}
 .table td {
   width: min-content;
   padding: 4px 6px 6px;
   border-bottom: 1px solid #c6d5e1;
   border-right: 1px solid #c6d5e1;
-}
-.table .head h3 {
-  background: url(../../../images/sort.gif) 7px center no-repeat;
-  cursor: pointer;
-  padding-left: 18px;
-}
-.table .desc,
-.table .asc {
-  background: url(../../../images/header-selected-bg.gif);
-}
-.table .desc h3 {
-  background: url(../../../images/desc.gif) 7px center no-repeat;
-  cursor: pointer;
-  padding-left: 18px;
-}
-.table .asc h3 {
-  background: url(../../../images/asc.gif) 7px center no-repeat;
-  cursor: pointer;
-  padding-left: 18px;
-}
-.table .head:hover,
-.table .desc:hover,
-.table .asc:hover {
-  color: #fff;
-}
-.table .evenrow td {
-  background: #fff;
-}
-.table .oddrow td {
-  background: #ecf2f6;
-}
-.table td.evenselected {
-  background: #ecf2f6;
-}
-.table td.oddselected {
-  background: #dce6ee;
 }
 
 .controls {

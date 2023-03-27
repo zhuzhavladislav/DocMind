@@ -1,3 +1,13 @@
+.fade{
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+}
+.fade.show{
+  opacity: 1;
+  visibility: visible;
+}
+
 .container {
   display: flex;
   flex-direction: column;
@@ -14,42 +24,102 @@
   height: 100vh;
   justify-content: center;
   align-items: center;
-  color: white;
   font-size: 32px;
   overflow: hidden;
-  background-color:rgba(0, 0, 0, 0.6)
+  background-color:rgba(0, 0, 0, 0.6);
+}
+.loading img{
+  width: 5vw;
+  height: 5vw;
 }
 .highlight{
   color: #f86021
 }
+.inputFiles{
+  width: 60vw;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin-top: 40px;
+}
+.inputFiles form{
+  width: 100%;
+}
+.inputFile {
+  display: none;
+}
+.inputFile + .inputFileLabel {
+  display: flex;
+  width: 100%;
+  text-align: center;
+  font-size: calc(1vmin + 0.5vw);
+  color: #fff;
+  color: white;
+  background-color: #666666;
+  padding: 10px 20px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  display: inline-block;
+  margin-right: 15px;
+  transition: all 0.4s ease;
+  cursor: pointer;
+  transform: scale(0.95);
+  transition: 0.9s;
+}
+.inputFile1 + .inputFileLabel1 {
+  background-color:lightblue;
+  color: #363636;
+}
+.inputFile2 + .inputFileLabel2 {
+  background-color:lightgreen;
+  color: #363636;
+}
+
+.inputFile:focus + label,
+.inputFile + label:hover {
+  transform: scale(1);
+}
+
 .textAnalyze {
   width: 60vw;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #f1f1f1;
-  padding: 20px;
   border-radius: 10px;
-  margin-top: 20px;
+  margin-top: 30px;
 }
 .textInput {
   width: 100%;
   height: 40vh;
   padding: 12px 20px;
   box-sizing: border-box;
-  border: 2px solid #fff;
+  border: 2px solid #e9e9e9;
   border-radius: 4px;
+  box-shadow: 2px 0 30px rgba(0, 0, 0, 0.1);
   background-color: white;
   resize: vertical;
-  transition: all 0.2s;
+  transform: scale(0.98);
+  transition: transform 0.9s;
 }
-.textInput:active {
-  border: 2px solid #000;
+.textInput:focus {
+  transform: scale(1);
+  border: 2px solid #e9e9e9;
+  box-shadow: 2px 0 30px rgba(0, 0, 0, 0.2);
 }
-button {
+.button {
   margin-top: 20px;
 }
-
+.analyzeInfo{
+  display: flex;
+  width: 60vw;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 60px;
+  justify-content: center;
+  flex-wrap: wrap;
+  transition: all 0.2s;
+}
 .filter {
   display: flex;
   flex-wrap: wrap;
@@ -61,7 +131,7 @@ button {
   cursor: pointer;
   background-color: rgb(243, 243, 243);
   color: black;
-  font-size: 14px;
+  font-size: calc(1.2vmin + 0.5vw);
   border-radius: 100px;
   padding-left: 25px;
   padding-right: 25px;
@@ -78,7 +148,7 @@ button {
   background: #ddd;
 }
 .filter input[type="radio"]:checked + label {
-  background-color: black;
+  background-color: #363636;
   color: white;
 }
 
