@@ -7,7 +7,7 @@ export default SidebarContext
 export const SidebarProvider = ({children}) => {
     
     const [sidebar, setSidebar] = useState(false)
-    const [textFromSidebar, setTextFromSidebar] = useState()
+    const [textFromSidebar, setTextFromSidebar] = useState(null)
 
     const handleSidebar = (visible) => {
         setSidebar(visible)

@@ -37,7 +37,7 @@ const Table = (props) => {
 
     return (
         <div>
-            <table cellPadding="0" cellSpacing="0" border="0" id="table" className={s.table} style={{width: "100%"}}>
+            <table cellPadding="0" cellSpacing="0" border="0" id="table" className={s.table}>
                 <thead>
                     <tr>
                         <th><p>#</p></th>

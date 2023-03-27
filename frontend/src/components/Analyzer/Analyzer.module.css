@@ -115,13 +115,14 @@
   width: 60vw;
   flex-direction: column;
   gap: 20px;
-  margin-top: 60px;
+  margin-top: 120px;
   justify-content: center;
   flex-wrap: wrap;
   transition: all 0.2s;
 }
 .filter {
   display: flex;
+  margin-top: 60px;
   flex-wrap: wrap;
   gap: 10px;
 }

@@ -28,7 +28,8 @@ nltk.download("stopwords")
 
 russian_stopwords = stopwords.words("russian")
 punctuation_marks = ['!', ',', '(', ')', ':', '-', '?', '.',
-                     '..', '…', '...', '«', '»', ';', '—', '–', '--', '­', ' ', ' ', '�']
+                     '..', '…', '...', '«', '»', ';', '—', '–',
+                     '--', '­', ' ', ' ', '�', '”', '“', '×', '№', 'т.д.']
 morph = pymorphy2.MorphAnalyzer()
 word_to_index = joblib.load('./AI/word_to_index')
 
@@ -184,6 +185,8 @@ class UserTexts(APIView):
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
+        else:
+            return Response(serializer.error_messages)
         
 
 @permission_classes([IsAuthenticated])
