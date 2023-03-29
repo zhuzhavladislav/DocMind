@@ -5,7 +5,6 @@ import axios from "axios";
 import Table from './Table/Table';
 import AuthContext from '../../context/AuthContext';
 import SidebarContext from '../../context/SidebarContext';
-import loader from '../../images/loop-loading.gif'
 
 const Analyzer = () => {
   const {user, id, authTokens, logoutUser} = useContext(AuthContext)
@@ -17,7 +16,7 @@ const Analyzer = () => {
 
 
   //Формируем POST запрос к серверу Django, и получаем ответ в виде данных
-  const analyzeText = (e) => {
+  const analyzeText = (e, format) => {
     setIsLoading(true)
     const data = new FormData();
     if (e.target.files && e.target.files.length > 0) {
@@ -25,10 +24,12 @@ const Analyzer = () => {
       const file = e.target.files[0]
       setText("");
       setAnalyzeInfo();
-      data.append('file', file);
+      data.append(`${format}`, file);
+      document.getElementById("file1").value = ""
+      document.getElementById("file2").value = ""
     } else if (text != "") {
-      // Текст был введен пользователем, отправляем его на сервер
-      data.append('text', text);
+      // Текст был введен пользователем, отправляzем его на сервер
+      data.append(`text`, text);
     } else {
       // Если ни файл, ни текст не были введены, выходим из функции
       setIsLoading(false);
@@ -41,12 +42,12 @@ const Analyzer = () => {
       .then((res) => {
         setAnalyzeInfo(res.data);
         setText(res.data.text)
-        document.getElementById("file1").value = ""
         setIsLoading(false)
       })
       .catch((err) => {
+        console.log(err);
+        alert(err.response?.data || 'Непредвиденная ошибка');
         setIsLoading(false);
-        alert(err);
       });
   }
 
@@ -64,8 +65,9 @@ const Analyzer = () => {
           setIsLoading(false)
         })
         .catch((err) => {
-          setIsLoading(false);
+          console.log(err);
           alert(err.response?.data?.text || 'Непредвиденная ошибка');
+          setIsLoading(false);
         });
     } else {
       logoutUser()
@@ -82,16 +84,16 @@ const Analyzer = () => {
 
   return (
     <main className={s.container}>
-      <div className={isLoading ? `${s.loading} ${s.fade} ${s.show}` : `${s.loading} ${s.fade}`}><img alt="loading" src={loader} /></div>
+      <div className={isLoading ? `${s.loading} ${s.fade} ${s.show}` : `${s.loading} ${s.fade}`}><span className={s.loader}></span></div>
       <h1 style={{ marginTop: 20 }}>Семантический анализ текста DocAnalyze</h1> 
       <div className={s.inputFiles}>
         <form>
-          <input className={s.inputFile + " " + s.inputFile1} type="file" accept=".txt, .doc, .docx" name="file1" id="file1" onChange={e => analyzeText(e)} />
+          <input className={s.inputFile + " " + s.inputFile1} type="file" accept=".txt, .doc, .docx" name="file1" id="file1" onChange={e => analyzeText(e, "file")} />
           <label className={s.inputFileLabel + " " + s.inputFileLabel1} htmlFor="file1">Проанализировать текстовый файл (.txt, .doc)</label>
         </form>
         <form>
-          <input className={s.inputFile + " " + s.inputFile2} type="file" accept=".wav" name="file2" id="file2" onChange={(e) => { setText(""); setAnalyzeInfo(); analyzeText(e) }} />
-          <label className={s.inputFileLabel + " " + s.inputFileLabel2} htmlFor="file2" >Проанализировать аудиофайл (.mp3, .wav)</label>
+          <input className={s.inputFile + " " + s.inputFile2} type="file" accept=".wav" name="file2" id="file2" onChange={e => analyzeText(e, "audio") } />
+          <label className={s.inputFileLabel + " " + s.inputFileLabel2} htmlFor="file2" >Проанализировать аудиофайл (.wav)</label>
         </form>
       </div>
       <div className={s.textAnalyze}>

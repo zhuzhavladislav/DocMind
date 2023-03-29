@@ -8,7 +8,7 @@ import TextCard from './TextCard/TextCard'
 
 const Sidebar = () => {
     const { user, authTokens, logoutUser, loginUser } = useContext(AuthContext)
-    const { sidebar, handleSidebar } = useContext(SidebarContext)
+    const { sidebar, setSidebar } = useContext(SidebarContext)
     const [texts, setTexts] = useState()
 
     const [pageSize, setPageSize] = useState(3)
@@ -20,7 +20,7 @@ const Sidebar = () => {
     useEffect(() => {
         //Получение текстов при открытии сайдбара или входе
         getTexts()
-    }, [user, handleSidebar])
+    }, [user, sidebar])
 
     useEffect(()=>{
         //Пагинация
@@ -84,14 +84,14 @@ const Sidebar = () => {
             <div className={s.profile}>
                 <div className={s.profileHeader}>
                     <p>Меню</p>
-                    <p style={{ cursor: "pointer" }} onClick={() => handleSidebar(false)}>✕</p>
+                    <p style={{ cursor: "pointer" }} onClick={() => setSidebar(false)}>✕</p>
                 </div>
                 <div className={s.profileSection}>
                     {user
                         ?
                         <>
                             <p>Привет, {user}</p>
-                            <Link className={s.button} to="/account" onClick={() => handleSidebar(false)}>Аккаунт</Link>
+                            <Link className={s.button} to="/account" onClick={() => setSidebar(false)}>Аккаунт</Link>
                             <button className={s.button} onClick={logoutUser}>Выйти из аккаунта</button>
                         </>
                         :

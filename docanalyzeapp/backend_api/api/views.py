@@ -1,30 +1,35 @@
-import io
 from docx import Document  # библиотека для работы с .docx файлами
 from .serializers import *
 from ..models import *
+
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.shortcuts import render
-from django.contrib.auth.hashers import make_password
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
+
+from django.contrib.auth.hashers import make_password
+
 from pymystem3 import Mystem
+
+import speech_recognition as sr
+import numpy as np
+import os
+import io
 import pymorphy2
 import joblib
 import re
-import pandas as pd
-import numpy as np
 import nltk
 import string
+
 from nltk.stem import *
 from nltk.corpus import stopwords
 from nltk import word_tokenize
+
 nltk.download('punkt')
 nltk.download("stopwords")
-
 
 russian_stopwords = stopwords.words("russian")
 punctuation_marks = ['!', ',', '(', ')', ':', '-', '?', '.',
@@ -48,16 +53,6 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
-
-# @api_view(['GET', 'POST'])
-# def getRoutes(request):
-#     routes = [
-#         '/api/token',
-#         '/api/token/refresh',
-#         '/analyze'
-#     ]
-
-#     return Response(routes)
 
 # ---Семантический анализ---#
  
@@ -186,7 +181,7 @@ class UserTexts(APIView):
             serializer.save()
             return Response(serializer.data)
         else:
-            return Response(serializer.error_messages)
+            return Response(serializer.error_messages[0], status=status.HTTP_400_BAD_REQUEST)
         
 
 @permission_classes([IsAuthenticated])
@@ -226,7 +221,7 @@ class RegisterUser(APIView):
                     username=username, email=email, password=make_password(password))
                 user.save()
             except:
-                return Response({'Пользователь с данным логином существует.'},
+                return Response('Пользователь с данным логином существует.',
                                 status=status.HTTP_400_BAD_REQUEST)
             return Response('Регистрация прошла успешно.',
                             status=status.HTTP_201_CREATED)
@@ -243,7 +238,7 @@ class Analyze(APIView):
             # Проверяем формат файла
             if filename.endswith('.txt'):
                 # Получаем текст из файла
-                text = file.read().decode('utf-8')
+                text = file. Read().decode('utf-8')
             elif filename.endswith('.doc') or filename.endswith('.docx'):
                 # Получаем текст из файла формата .doc/.docx
                 doc = Document(io.BytesIO(file.read()))
@@ -251,15 +246,27 @@ class Analyze(APIView):
                     [paragraph.text for paragraph in doc.paragraphs])
             else:
                 # Неверный формат файла
-                return Response('Неверный формат файла')
+                return Response('Неверный формат файла. Доступен анализ (.txt, .doc, .docx)', status=status.HTTP_400_BAD_REQUEST)
+        elif 'audio' in request.FILES:  # Если входные данные - аудио
+            audio = request.FILES['audio']
+            extension = os.path.splitext(audio.name)[1]
+            # Добавляем проверку на аудиофайлы форматов .wav или .mp3
+            if extension == '.wav':
+                # Получаем текст из аудиофайла
+                r = sr.Recognizer()
+                audio_file = sr.AudioFile(audio)
+                with audio_file as source:
+                    audio = r.record(source)
+                    text = r.recognize_google(audio, language="ru-RU")
+            else: 
+                # Неверный формат файла
+                return Response('Неверный формат файла. Доступен анализ (.wav)', status=status.HTTP_400_BAD_REQUEST)
         elif 'text' in request.POST:  # Если входные данные - текст
             text = request.POST['text']
         elif 'text' in request.data:  # Если входные данные переданы через тело POST-запроса
             text = request.data['text']
         else:
             text = ""
-
-            
 
         # Считаем количество симоволов
         num_symbols = len([i for i in text if i != "\n"])
