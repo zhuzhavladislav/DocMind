@@ -1,0 +1,104 @@
+#root{
+    --index: calc(1vw+1vh)
+}
+@-webkit-keyframes fade{
+    from{opacity: .4;}
+    to{opacity: 1;}
+}
+@keyframes fade{
+    from{opacity: .4;}
+    to{opacity: 1;}
+}
+
+.help{
+    background-color:white;
+    padding: 50px;
+    padding-top: 0px;
+    padding-left: 20vw;
+    padding-right: 20vw;
+    -webkit-animation-name: fade;
+    -webkit-animation-duration: 1s;
+    animation-name: fade;
+    animation-duration: 1s;
+}
+.help a{
+    color: #0000ee;
+    cursor: pointer;
+    text-decoration: underline;
+}
+.help a:active{
+    color: #ff4100;
+    cursor: pointer;
+    text-decoration: underline;
+}
+.help a:hover{
+    text-decoration: underline;
+    color: #0000ee;
+}
+.help a:visited{
+    text-decoration: underline;
+    color: #551a8b;
+}
+
+.help h1{
+    font-size: 2em;
+    margin-block-start: 0.67em;
+    margin-block-end: 0.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+.help h2{
+    display: block;
+    font-size: 1.5em;
+    margin-block-start: 0.83em;
+    margin-block-end: 0.83em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+.help h3{
+    display: block;
+    margin-block-start: 1.33em;
+    margin-block-end: 1.33em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+}
+.help h4{
+    margin-top: 10px;
+}
+.help p{
+    margin-top: 10px;
+}
+
+.help ul{
+    list-style-type: disc;
+    margin-block-start: 0px;
+    margin-block-end: 0px;
+    display: block;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    padding-inline-start: 40px;
+    margin-left: 20px;
+}
+.help ul ul{
+    list-style-type: circle;
+    margin-left: 30px;
+}
+.help ul ul ul{
+    list-style-type: square;
+}
+.help li{
+    display: list-item;
+    text-align: -webkit-match-parent;
+}
+.help img{
+    width: calc(var(--index)*40);
+    height: calc(var(--index)*19);
+    display: block;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}

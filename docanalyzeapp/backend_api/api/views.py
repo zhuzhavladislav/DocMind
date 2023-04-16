@@ -1,7 +1,19 @@
-from docx import Document  # библиотека для работы с .docx файлами
 from .serializers import *
 from ..models import *
-
+import os
+import io
+import string
+import pymorphy2
+import joblib
+import re
+import nltk
+import speech_recognition as sr
+import numpy as np
+from nltk.stem import *
+from nltk.corpus import stopwords
+from nltk import word_tokenize
+from pymystem3 import Mystem
+from docx import Document  # библиотека для работы с .docx файлами
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,34 +21,25 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-
 from django.contrib.auth.hashers import make_password
-
-from pymystem3 import Mystem
-
-import speech_recognition as sr
-import numpy as np
-import os
-import io
-import pymorphy2
-import joblib
-import re
-import nltk
-import string
-
-from nltk.stem import *
-from nltk.corpus import stopwords
-from nltk import word_tokenize
 
 nltk.download('punkt')
 nltk.download("stopwords")
 
-russian_stopwords = stopwords.words("russian")
-punctuation_marks = ['!', ',', '(', ')', ':', '-', '?', '.',
+RUSSIAN_STOPWORDS = stopwords.words("russian")
+PUNCTUATION_MARKS = ['!', ',', '(', ')', ':', '-', '?', '.',
                      '..', '…', '...', '«', '»', ';', '—', '–',
                      '--', '­', ' ', ' ', '�', '”', '“', '×', '№', 'т.д.']
-morph = pymorphy2.MorphAnalyzer()
-word_to_index = joblib.load('./AI/word_to_index')
+
+# Load models
+word_to_index = joblib.load('./models/word_to_index')
+#semantic_native_bayes = joblib.load('./models/semantic_native_bayes.pkl')
+semantic_native_bayes = joblib.load('./models/nb_grid.pkl')
+semantic_sgd = joblib.load('./models/semantic_sgd.pkl')
+semantic_logistic_regression = joblib.load(
+    './models/semantic_logistic_regression.pkl')
+sentiment_logistic_regression = joblib.load(
+    './models/sentiment_logistic_regression.pkl')
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -58,7 +61,7 @@ class MyTokenObtainPairView(TokenObtainPairView):
  
 # Удаление знаков препинаний
 def remove_punctuation(text):
-    return "".join([ch if ch not in string.punctuation and ch not in punctuation_marks else ' ' for ch in text])
+    return "".join([ch if ch not in string.punctuation and ch not in PUNCTUATION_MARKS else ' ' for ch in text])
 
 # Удаление чисел
 def remove_numbers(text):
@@ -80,7 +83,7 @@ def dictionary_generate(text):
     tokens = word_tokenize(text)
     dictionary = [token for token in tokens if token != ' ']
     dictionary_core = [
-        token for token in tokens if token not in russian_stopwords and token != ' ']
+        token for token in tokens if token not in RUSSIAN_STOPWORDS and token != ' ']
     dictionary_result = []
     dictionary_core_result = []
     word_count = {}
@@ -108,7 +111,7 @@ def dictionary_generate(text):
 def find_stop_words(text):
     tokens = word_tokenize(text)
     text_stop_words = [
-        token for token in tokens if token in russian_stopwords and token != ' ']
+        token for token in tokens if token in RUSSIAN_STOPWORDS and token != ' ']
     count = len(text_stop_words)
     word_count = {}
     for word in text_stop_words:
@@ -125,7 +128,7 @@ def find_stop_words(text):
 def remove_stop_words(text):
     tokens = word_tokenize(text)
     tokens = [
-        token for token in tokens if token not in russian_stopwords and token != ' ']
+        token for token in tokens if token not in RUSSIAN_STOPWORDS and token != ' ']
     return " ".join(tokens)
 
 # ---Анализ тональности---#
@@ -158,14 +161,6 @@ def vectorize_sequences(sequences, dimension=10000):
             results[i, index] += 1.
     return results
 
-# Load AI
-semantic_native_bayes = joblib.load('./AI/semantic_native_bayes.pkl')
-semantic_sgd = joblib.load('./AI/semantic_sgd.pkl')
-semantic_logistic_regression = joblib.load(
-    './AI/semantic_logistic_regression.pkl')
-sentiment_logistic_regression = joblib.load(
-    './AI/sentiment_logistic_regression.pkl')
-
 # Create your views here.
 @permission_classes([IsAuthenticated])
 class UserTexts(APIView):
@@ -183,7 +178,6 @@ class UserTexts(APIView):
         else:
             return Response(serializer.error_messages[0], status=status.HTTP_400_BAD_REQUEST)
         
-
 @permission_classes([IsAuthenticated])
 class UserText(APIView):
     def get(self, request, text_num):
@@ -206,7 +200,6 @@ class UserText(APIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)
     
-
 class RegisterUser(APIView):
     def post(self, request):
         if request.method == 'POST':
@@ -229,7 +222,6 @@ class RegisterUser(APIView):
 # Тематический анализ текста, полученного от фронтэнда
 class Analyze(APIView):
     def post(self, request):
-
         # Получаем текст от фронтенда
         if 'file' in request.FILES:  # Если входные данные - файл
             file = request.FILES['file']
@@ -238,7 +230,7 @@ class Analyze(APIView):
             # Проверяем формат файла
             if filename.endswith('.txt'):
                 # Получаем текст из файла
-                text = file. Read().decode('utf-8')
+                text = file.read().decode('utf-8')
             elif filename.endswith('.doc') or filename.endswith('.docx'):
                 # Получаем текст из файла формата .doc/.docx
                 doc = Document(io.BytesIO(file.read()))
@@ -269,10 +261,9 @@ class Analyze(APIView):
             text = ""
 
         # Считаем количество симоволов
-        num_symbols = len([i for i in text if i != "\n"])
+        num_symbols = len(text.replace('\n', ''))
         # Считаем количество символов без пробела
-        num_symbols_without_space = len(
-            [i for i in text if i != ' ' and i != "\n"])
+        num_symbols_without_space = len(text.replace(' ', '').replace('\n', ''))
         # Считаем количество слов
         num_words = len(text.split())
         # Удаляем из текста пунктуацию, числа, и двойные пробелы
@@ -287,12 +278,13 @@ class Analyze(APIView):
         text2analyze = lemmatize_text(text2analyze)
 
         # Обрабатываем текст для ТОНА
+        morph = pymorphy2.MorphAnalyzer()
         preprocessed_text = preprocess(
-            text, stop_words, punctuation_marks, morph)
+            text, stop_words, PUNCTUATION_MARKS, morph)
         seq = text_to_sequence(preprocessed_text, word_to_index)
         bow = vectorize_sequences([seq], 10000)  # max 10000 слов
 
-        # Получаем от ИИ предположение
+        # Получаем предположение
         semantic_native_bayes_pred = semantic_native_bayes.predict([text2analyze])
         semantic_sgd_pred = semantic_sgd.predict([text2analyze])
         semantic_logistic_regression_pred = semantic_logistic_regression.predict([text2analyze])

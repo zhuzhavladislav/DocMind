@@ -13,14 +13,11 @@ const Footer = () => {
             </div>
             <hr className={s.footerLine}></hr>
             <div className={s.footerItems}>
-                <Link to="/">
-                    О проекте
+                <Link to="/help">
+                    Справка
                 </Link>
-                <Link to="/">
+                <Link to="/developers">
                     О разработчике
-                </Link>
-                <Link to="/">
-                    Мобильная версия
                 </Link>
             </div>
             <hr className={s.footerLine}></hr>
