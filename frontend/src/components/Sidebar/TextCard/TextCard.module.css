@@ -81,7 +81,6 @@
 .progress p{
   justify-self: center;
   align-self: center;
-  font-size: calc(0.5vmin + 0.5vw);
   color: black;
   z-index: 2;
 }
@@ -112,7 +111,6 @@
 .load p{
   justify-self: center;
   align-self: center;
-  font-size: calc(0.5vmin + 0.5vw);
   color: black;
   transition: all 0.2s;
 }

@@ -70,12 +70,30 @@ th {
 td {
     font-size: 12px;
 }
-h6 { font-size: calc(var(--base-em) / var(--ms1)); }
-h5 { font-size: calc(var(--base-em) * var(--ms0)); }
-h4 { font-size: calc(var(--base-em) * var(--ms1)); }
-h3 { font-size: calc(var(--base-em) * var(--ms2)); }
-h2 { font-size: calc(var(--base-em) * var(--ms3)); }
-h1 { font-size: calc(var(--base-em) * var(--ms4)); }
+h6 { 
+    color: #363636;
+    font-size: calc(var(--base-em) / var(--ms1));
+}
+h5 { 
+    color: #363636;
+    font-size: calc(var(--base-em) * var(--ms0));
+}
+h4 { 
+    color: #363636;
+    font-size: calc(var(--base-em) * var(--ms1));
+}
+h3 { 
+    color: #363636;
+    font-size: calc(var(--base-em) * var(--ms2));
+}
+h2 { 
+    color: #363636;
+    font-size: calc(var(--base-em) * var(--ms3));
+}
+h1 { 
+    color: #363636;
+    font-size: calc(var(--base-em) * var(--ms4));
+}
 p {
     font-size: calc(var(--base-em) / var(--ms1));
 }

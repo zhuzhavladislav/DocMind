@@ -13,10 +13,12 @@ const Table = (props) => {
     const [page,setPage] = useState(0)
 
     useEffect(() => {
-        setPage(0)
-        setPageCount(Math.ceil(props.words.length / pageSize))
-        setPages([...Array(pageCount).keys()].map(i =>
-            sortData(props.words).slice(i * pageSize, (i + 1) * pageSize)))
+        if(props.words) {
+            setPage(0)
+            setPageCount(Math.ceil(props.words.length / pageSize))
+            setPages([...Array(pageCount).keys()].map(i =>
+                sortData(props?.words).slice(i * pageSize, (i + 1) * pageSize)))
+        }
     }, [pageSize, pageCount, sortColumn, props])
 
     const sortData = (data) => {
@@ -49,12 +51,12 @@ const Table = (props) => {
                 </thead>
                 <tbody>
                     {pages ? pages[page].map((word, i) => (
-                        <tr key={word.word}>
+                        <tr key={word?.word}>
                             <td>{i+1}</td>
-                            <td>{word.word}</td>
-                            <td>{word.count}</td>
-                            <td>{(word.count * 100 / props.analyzeInfo.dictionary.without_stop_words.length).toFixed(1)}%</td>
-                            <td>{(word.count * 100 / props.analyzeInfo.num_words).toFixed(1)}%</td>
+                            <td>{word?.word}</td>
+                            <td>{word?.count}</td>
+                            <td>{(word?.count * 100 / props.analyzeInfo?.dictionary?.without_stop_words.length).toFixed(1)}%</td>
+                            <td>{(word?.count * 100 / props.analyzeInfo?.num_words).toFixed(1)}%</td>
                         </tr>
                     )) : null}
                 </tbody>

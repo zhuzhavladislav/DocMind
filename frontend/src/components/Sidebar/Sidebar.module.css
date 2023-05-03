@@ -3,7 +3,6 @@
     cursor: pointer;
     background-color: black;
     color: white;
-    font-size: calc(1vmin + 0.5vw);;
     border-color: transparent;
     border-radius: 20px;
     padding-left: 25px;
@@ -17,7 +16,6 @@
 .button:hover{
     background-color: #f86021;
     color: white;
-    
 }
 
 .sidebar{
@@ -55,10 +53,6 @@
     padding-left: 15px;
     padding-right: 15px;
 }
-.profileHeader p{
-    font-size: calc(1.5vmin + 0.5vw);
-    font-weight: 600;
-}
 .profileSection{
     max-height: 100%;
     display: flex;
@@ -83,7 +77,6 @@
     outline: none;
     background-size: 18px;
     font-family: 'Inter';
-    font-size: calc(1.1vmin + 0.5vw);
     padding-top: 5px;
     padding-bottom: 5px;
     color: #1d2120;
@@ -120,10 +113,22 @@
 .title{
     margin-left: 5px;
     margin-right: 5px;
-    font-size: calc(1.5vmin + 0.5vw);
+    font-size: calc(var(--base-em) * var(--ms0));
     font-weight: 600;
 }
 .textsList{
     display: flex;
     flex-direction: column;
+}
+
+@media (max-width: 640px) {
+    .profile{
+        width: 100vw;
+        height: 100%;
+        position: absolute;
+        right: 0;
+        color: rgb(0, 0, 0);
+        background-color: #ffffff;
+        z-index: 2;
+    }
 }

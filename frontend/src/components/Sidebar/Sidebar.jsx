@@ -11,7 +11,7 @@ const Sidebar = () => {
     const { sidebar, setSidebar } = useContext(SidebarContext)
     const [texts, setTexts] = useState()
 
-    const [pageSize, setPageSize] = useState(3)
+    const [pageSize, setPageSize] = useState(2)
     const [pageNumber, setPageNumber] = useState(1);
     const [maxPages, setMaxPages] = useState(1)
     const [startIndex, setStartIndex] = useState(1)
@@ -47,7 +47,7 @@ const Sidebar = () => {
     }
 
     const registerUser = async (e) => {
-        e.preventDefault()
+        e.preventDefault();
         const response = await fetch('http://localhost:8000/api/register/', {
             method: 'POST',
             headers: {
@@ -57,6 +57,7 @@ const Sidebar = () => {
         })
         const textResponse = await response.json();
         alert(textResponse)
+        loginUser(e)
     }
 
     const getTexts = async () => {

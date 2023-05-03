@@ -27,7 +27,7 @@ export const AuthProvider = ({children}) => {
             setId(jwt_decode(data.access).id)
             localStorage.setItem('authTokens', JSON.stringify(data))
         } else {
-            alert(response.status)
+            alert(data.detail)
         }
     }
 

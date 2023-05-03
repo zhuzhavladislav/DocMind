@@ -3,15 +3,14 @@
     cursor: pointer;
     width: 2vw;
     height: 2vw;
-    min-width: 20px;
-    min-height: 20px;
+    min-width: 30px;
+    min-height: 30px;
     padding: 0;
     margin: 0;
     border-style: solid;
     border-radius: 50%;
     border-width: 1px;
     border-color: #1d2120;
-    font-size: calc(0.4vmin + 0.6vw);
     font-weight: 300;
     transition: 0.2s;
     justify-content: center;

@@ -7,6 +7,18 @@
   opacity: 1;
   visibility: visible;
 }
+.tableFade{
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
+}
+.tableFade.show{
+  opacity: 1;
+  visibility: visible;
+  position: relative;
+  transition: opacity 1s ease-out, visibility 1s ease-out;
+}
 @-webkit-keyframes fade{
     from{opacity: .4;}
     to{opacity: 1;}
@@ -43,7 +55,7 @@
   justify-content: space-evenly;
 }
 .filesButtons form{
-  width: auto;
+  width: 100%;
 }
 .fileInput {
   display: none;
