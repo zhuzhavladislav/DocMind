@@ -14,6 +14,7 @@ const Account = () => {
   const [startIndex, setStartIndex] = useState(1)
   const [pageItems, setPageItems] = useState()
 
+
   useEffect(() => {
     getTexts()
   }, [user])
@@ -61,6 +62,7 @@ const Account = () => {
       setTexts(null)
     }
   }
+
   return (
     <main>
       {pageItems && pageItems.length != 0 ?

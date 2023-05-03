@@ -33,9 +33,9 @@ PUNCTUATION_MARKS = ['!', ',', '(', ')', ':', '-', '?', '.',
 
 # Load models
 word_to_index = joblib.load('./models/word_to_index')
-#semantic_native_bayes = joblib.load('./models/semantic_native_bayes.pkl')
-semantic_native_bayes = joblib.load('./models/nb_grid.pkl')
-semantic_sgd = joblib.load('./models/semantic_sgd.pkl')
+#semantic_naive_bayes = joblib.load('./models/semantic_naive_bayes.pkl')
+semantic_naive_bayes = joblib.load('./models/nb_grid.pkl')
+semantic_svm = joblib.load('./models/semantic_svm.pkl')
 semantic_logistic_regression = joblib.load(
     './models/semantic_logistic_regression.pkl')
 sentiment_logistic_regression = joblib.load(
@@ -132,7 +132,7 @@ def remove_stop_words(text):
     return " ".join(tokens)
 
 # ---Анализ тональности---#
-# Препроцес
+# Препроцесс
 def preprocess(text, stop_words, punctuation_marks, morph):
     tokens = word_tokenize(text.lower())
     preprocessed_text = []
@@ -285,8 +285,8 @@ class Analyze(APIView):
         bow = vectorize_sequences([seq], 10000)  # max 10000 слов
 
         # Получаем предположение
-        semantic_native_bayes_pred = semantic_native_bayes.predict([text2analyze])
-        semantic_sgd_pred = semantic_sgd.predict([text2analyze])
+        semantic_naive_bayes_pred = semantic_naive_bayes.predict([text2analyze])
+        semantic_svm_pred = semantic_svm.predict([text2analyze])
         semantic_logistic_regression_pred = semantic_logistic_regression.predict([text2analyze])
         sentiment_logistic_regression_pred = sentiment_logistic_regression.predict_proba(
             bow)
@@ -295,9 +295,9 @@ class Analyze(APIView):
         else:
             result = {
                 "text": text,
-                "semantic_native_bayes": semantic_native_bayes_pred[0],
-                "semantic_sgd": semantic_sgd_pred[0],
-                "semantic_logistic_regression": semantic_logistic_regression_pred[0],
+                "semantic": {"naiveBayes": semantic_naive_bayes_pred[0],
+                             "supportVectorMachines": semantic_svm_pred[0],
+                             "logisticRegression": semantic_logistic_regression_pred[0]},
                 "num_symbols": num_symbols,
                 "num_symbols_without_space": num_symbols_without_space,
                 "num_words": num_words,

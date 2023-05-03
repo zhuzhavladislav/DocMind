@@ -121,7 +121,7 @@ const Sidebar = () => {
                         <p className={s.title}>Сохраненные результаты</p>
                         <div className={s.textsList}>
                             {pageItems.map((text) => (
-                                <TextCard getTexts={getTexts} onPageChange={onPageChange} pageNumber={pageNumber} key={text.id} text={text}/>
+                                <TextCard getTexts={getTexts} key={text.id} text={text}/>
                             ))}
                         </div>
                         <Pagination pageNumber={pageNumber} onPageChange={onPageChange} maxPages={maxPages}/>

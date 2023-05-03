@@ -1,5 +1,21 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
+:root {
+    --ratio: 1.2;
+    --base: 1;
+    --base-em: calc(var(--base) * 1em);
+    --base-px: calc(var(--base) * 16px);
+    --ms0: 1;
+    --ms1: var(--ratio);                    /* 1.2   */
+    --ms2: calc(var(--ratio) * var(--ms1)); /* 1.44  */
+    --ms3: calc(var(--ratio) * var(--ms2)); /* 1.728 */
+    --ms4: calc(var(--ratio) * var(--ms3)); /* 2.074 */
+    --ms5: calc(var(--ratio) * var(--ms4)); /* 2.488 */
+    --ms6: calc(var(--ratio) * var(--ms5)); /* 2.986 */
+    --ms7: calc(var(--ratio) * var(--ms6)); /* 3.583 */
+}
+
+
 *{
     margin: 0;
     padding: 0;
@@ -8,35 +24,35 @@
 }
 /* width */
 ::-webkit-scrollbar {
-  width: 7px;
-  transition: 0.2s all;
+    width: 7px;
+    transition: 0.2s all;
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+    background: #f1f1f1;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+    background: #888;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+    background: #555;
 }
 button{
     cursor: pointer;
     background-color: #363636;
     color: white;
-    font-size: calc(1vmin + 0.5vw);
+    font-size: calc(var(--base-em) / var(--ms1));
     border-color: transparent;
     border-radius: 20px;
-    padding-left: 25px;
-    padding-right: 25px;
-    padding-top: 5px;
-    padding-bottom: 5px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     justify-items: center;
     transition: all 0.2s;
 }
@@ -54,25 +70,17 @@ th {
 td {
     font-size: 12px;
 }
-h1 {
-    font-size: calc(2vmin + 1vw);
-    font-weight: 400;
-}
-
-h2 {
-    font-size: 2.5vw;
-    font-weight: 800;
-}
-h3 {
-    font-size: 1.5vw;
-    font-weight: 700;
-}
-h4 {
-    font-size: 1vw;
-    font-weight: 600;
-}
+h6 { font-size: calc(var(--base-em) / var(--ms1)); }
+h5 { font-size: calc(var(--base-em) * var(--ms0)); }
+h4 { font-size: calc(var(--base-em) * var(--ms1)); }
+h3 { font-size: calc(var(--base-em) * var(--ms2)); }
+h2 { font-size: calc(var(--base-em) * var(--ms3)); }
+h1 { font-size: calc(var(--base-em) * var(--ms4)); }
 p {
-    font-size: calc(1.2vmin + 0.4vw);
+    font-size: calc(var(--base-em) / var(--ms1));
+}
+a {
+    font-size: calc(var(--base-em) / var(--ms1));
 }
 a:link {
     text-decoration: none;

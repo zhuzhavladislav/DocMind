@@ -3,7 +3,9 @@ import AuthContext from '../../../context/AuthContext';
 import SidebarContext from '../../../context/SidebarContext';
 import s from './TextCard.module.css'
 
-const TextCard = ({ text, getTexts, onPageChange, pageNumber }) => {
+const TextCard = ({ text, getTexts}) => {
+    console.log(text);
+
     const { setTextFromSidebar } = useContext(SidebarContext)
     const {authTokens} = useContext(AuthContext)
 

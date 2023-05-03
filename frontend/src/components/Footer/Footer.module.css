@@ -6,8 +6,8 @@ footer {
     margin-top: 40px;
     padding-top: 20px;
     padding-bottom: 20px;
-    padding-left: 20%;
-    padding-right: 20%;
+    justify-content: space-around;
+    justify-items: center;
     background-color: #f5f5f5;
     color: #363636;
     align-items: center;
@@ -17,28 +17,12 @@ footer img {
     height: 3vw;
 }
 footer p {
-    font-size: 32;
     font-weight: 900;
     color: #363636;
-    font-size: calc(3vmin + 0.2vw);
-}
-.footerTop {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-}
-.footerTop div p{
-    font-size: calc(1.8vmin + 0.1vw);
-    font-weight: 300;
-
-}
-.footerLine{
-    width: auto;
-    height: 0.1px;
-    background-color: #363636;
-
+    font-size: calc(var(--base-em) / var(--ms1));
 }
 .footerItems {
+    max-width: 960px;
     display: flex;
     gap: 2vw;
 }
@@ -47,15 +31,17 @@ footer p {
     text-align: center;
     color: #363636;
     position: relative;
-    font-size: calc(1.8vmin + 0.1vw);
     transition: 0.2s;
 }
 .footerItems a:hover{
     color:#f86021;
 }
-
+.copyright{
+    max-width: 960px;
+    padding-right: 3rem;
+    padding-left: 3rem;
+}
 .copyright p{
-    width: 40%;
-    font-size: calc(1.4vmin + 0.1vw);
+    font-size: calc(var(--base-em) / var(--ms1));
     font-weight: 300;
 }
