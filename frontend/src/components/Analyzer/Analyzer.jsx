@@ -92,7 +92,7 @@ const Analyzer = () => {
   return (
     <main className={s.container}>
       <section className={s.section}>
-        <h1 style={{ alignSelf: "center" }}>Семантический анализ текста DocAnalyze</h1>
+        <h1 style={{ alignSelf: "center" }}>Семантический анализ текста DocMind</h1>
         <div className={s.filesButtons}>
           <form>
             <input className={s.fileInput + " " + s.fileInput1} type="file" accept=".txt, .doc, .docx" name="file1" id="file1" onChange={e => analyzeText(e, "file")} />

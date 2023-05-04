@@ -15,7 +15,6 @@
     --ms7: calc(var(--ratio) * var(--ms6)); /* 3.583 */
 }
 
-
 *{
     margin: 0;
     padding: 0;

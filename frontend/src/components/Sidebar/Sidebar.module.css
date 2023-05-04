@@ -29,31 +29,56 @@
     z-index: 1;
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.3s ease-out, visibility 0.3s ease-out;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease-in-out;
+    backdrop-filter: blur(1px);
 }
 .sidebar.show{
     opacity: 1;
     visibility: visible;
 }
-.profile{
-    width: 20vw;
-    height: 100%;
-    position: absolute;
-    right: 0;
-    color: rgb(0, 0, 0);
+
+.container{
+    width: 100%;
+    border-radius: 7px;
+    overflow: hidden;
+    max-width: 20em;
+    min-width: 17em;
+    height: min-content;
     background-color: #ffffff;
+    transform: scale(0);
+    transition: all 0.3s ease-in-out;
     z-index: 2;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1), 0 2px 2px rgba(0,0,0,0.1), 0 3px 1px -2px rgba(0,0,0,0.1);
 }
-.profileHeader{
+.container.show{
+    transform: scale(1);
+}
+.header{
     display: flex;
     flex-direction: row;
+    align-items: center;
     justify-content: space-between;
-    background-color:rgb(238, 238, 238);
-    padding: 10px;
-    padding-left: 15px;
-    padding-right: 15px;
+    background-color: #f86021;
+    color: rgb(255, 255, 255);
+    padding: 0.8em;
+    font-size: calc(var(--base-em) * var(--ms1));
+    font-weight: 600;   
 }
-.profileSection{
+.close {
+    display: flex;
+    width: 25px;
+    height: 25px;
+    fill: #ffffff;
+    cursor: pointer;
+    border-radius: 50px;
+    transition: all 0.3s;
+}
+.close:hover{
+    background-color:#ffffff33;
+}
+.section{
     max-height: 100%;
     display: flex;
     flex-direction: column;
@@ -99,36 +124,16 @@
     border-color: green;
 }
 
-.textsSection{
-    overflow-y: auto;
-    max-height: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding-top: 20px;
-    padding-bottom: 200px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-.title{
-    margin-left: 5px;
-    margin-right: 5px;
-    font-size: calc(var(--base-em) * var(--ms0));
-    font-weight: 600;
-}
-.textsList{
-    display: flex;
-    flex-direction: column;
-}
-
 @media (max-width: 640px) {
-    .profile{
-        width: 100vw;
-        height: 100%;
-        position: absolute;
-        right: 0;
+    .container{
+        width: 100%;
+        max-width: 100%;
+        min-width: 100%;
+        height: min-content;
         color: rgb(0, 0, 0);
         background-color: #ffffff;
+        transform: scale(0);
+        transition: all 0.3s ease-in-out;
         z-index: 2;
     }
 }

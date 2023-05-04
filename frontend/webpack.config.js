@@ -4,6 +4,7 @@ const ReactRefreshWebpackPlugin = require("@pmmmwh/react-refresh-webpack-plugin"
 const MiniCssExtractPlugin = require("mini-css-extract-plugin")
 const HtmlWebpackPlugin = require("html-webpack-plugin")
 const { CleanWebpackPlugin } = require("clean-webpack-plugin")
+const FaviconsWebpackPlugin = require("favicons-webpack-plugin")
 
 let mode = "development"
 
@@ -11,6 +12,10 @@ const plugins = [
     new CleanWebpackPlugin(),
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({template: "./src/index.html"}),
+    new FaviconsWebpackPlugin({
+        logo: 'src/public/android-chrome-192x192.png',
+        cache: false,
+    })
 ]
 
 if (process.env.NODE_ENV === "production") {

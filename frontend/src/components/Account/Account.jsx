@@ -5,7 +5,7 @@ import s from './Account.module.css'
 import ProfileTextCard from './ProfileTextCard/ProfileTextCard'
 
 const Account = () => {
-  const { user, authTokens } = useContext(AuthContext)
+  const { user, authTokens, logoutUser } = useContext(AuthContext)
   const [texts, setTexts] = useState()
 
   const [pageSize, setPageSize] = useState(3)

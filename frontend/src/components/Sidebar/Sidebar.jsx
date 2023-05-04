@@ -7,44 +7,8 @@ import s from './Sidebar.module.css'
 import TextCard from './TextCard/TextCard'
 
 const Sidebar = () => {
-    const { user, authTokens, logoutUser, loginUser } = useContext(AuthContext)
+    const { user, logoutUser, loginUser } = useContext(AuthContext)
     const { sidebar, setSidebar } = useContext(SidebarContext)
-    const [texts, setTexts] = useState()
-
-    const [pageSize, setPageSize] = useState(2)
-    const [pageNumber, setPageNumber] = useState(1);
-    const [maxPages, setMaxPages] = useState(1)
-    const [startIndex, setStartIndex] = useState(1)
-    const [pageItems, setPageItems] = useState()
-
-    useEffect(() => {
-        //Получение текстов при открытии сайдбара или входе
-        getTexts()
-    }, [user, sidebar])
-
-    useEffect(()=>{
-        //Пагинация
-        //Если тексты загрузились
-        if(texts){
-            //Вычисляем максимальное количество страниц
-            setMaxPages(Math.ceil(texts.length / pageSize))
-            //Вычисляем начальный элемент на странице
-            setStartIndex((pageNumber - 1) * pageSize)
-            //Устанавливаем элементы на странице
-            setPageItems(texts.slice(startIndex, startIndex + pageSize))
-        } 
-    }, [texts, startIndex, pageSize, pageNumber])
-
-    useEffect(()=>{
-        if (pageNumber > 1 && pageItems.length === 0) {
-            // Если на текущей странице не осталось элементов, то переключиться на предыдущую страницу
-            setPageNumber(pageNumber - 1);
-        }
-    },[pageItems])
-
-    const onPageChange = (pageNumber) => {
-        setPageNumber(pageNumber)
-    }
 
     const registerUser = async (e) => {
         e.preventDefault();
@@ -53,82 +17,32 @@ const Sidebar = () => {
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({'email': e.target.email.value, 'username': e.target.username.value, 'password': e.target.password.value})
+            body: JSON.stringify({ 'email': e.target.email.value, 'username': e.target.username.value, 'password': e.target.password.value })
         })
         const textResponse = await response.json();
         alert(textResponse)
         loginUser(e)
     }
 
-    const getTexts = async () => {
-        if (authTokens) {
-            const response = await fetch('http://localhost:8000/api/texts/', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + String(authTokens.access)
-                }
-            })
-            if (response.ok) {
-                const data = await response.json()
-                setTexts(data)
-            } else {
-                logoutUser()
-            }
-        } else {
-            setTexts(null)
-        }
-    }
-
     return (
         <div className={s.sidebar + " " + (sidebar ? s.show : null)}>
-            <div className={s.profile}>
-                <div className={s.profileHeader}>
-                    <p>Меню</p>
-                    <p style={{ cursor: "pointer" }} onClick={() => setSidebar(false)}>✕</p>
+            <div className={s.container + " " + (sidebar ? s.show : null)}>
+                <div className={s.header}>
+                    <p>Войти</p>
+                    <svg aria-hidden="true" role="img" focusable="false" viewBox="0 0 24 24" className={s.close} onClick={()=>setSidebar(false)}><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"></path></svg>
                 </div>
-                <div className={s.profileSection}>
-                    {user
-                        ?
-                        <>
-                            <p>Привет, {user}</p>
-                            <Link className={s.button} to="/account" onClick={() => setSidebar(false)}>Аккаунт</Link>
-                            <button className={s.button} onClick={logoutUser}>Выйти из аккаунта</button>
-                        </>
-                        :
-                        <div style={{display: "flex", flexDirection: "column", gap: 30}}>
-                            <div style={{display: "flex", flexDirection: "column", gap: 10}}>
-                                <p>Войдите</p>
-                                <form onSubmit={loginUser} className={s.loginForm}>
-                                    <input required type="text" name="username" placeholder='Введите имя пользователя' className={s.input} />
-                                    <input required type="password" name='password' placeholder='Введите пароль' className={s.input} />
-                                    <input type="submit" className={s.button} value="Войти" />
-                                </form>
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                                <p>Или зарегистрируйтесь</p>
-                                <form onSubmit={registerUser} className={s.loginForm}>
-                                    <input required type="email" name="email" placeholder='Введите email' className={s.input} />
-                                    <input required type="text" name="username" placeholder='Введите имя пользователя' className={s.input} />
-                                    <input required type="password" name='password' placeholder='Введите пароль' className={s.input} />
-                                    <input type="submit" className={s.button} value="Зарегистрироваться" />
-                                </form>
-                            </div>
+                <div className={s.section}>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                            <form onSubmit={(e)=>{ loginUser(e); setSidebar(false)}} className={s.loginForm}>
+                                <input required type="text" name="username" placeholder='Введите имя пользователя' className={s.input} />
+                                <input required type="password" name='password' placeholder='Введите пароль' className={s.input} />
+                                <input type="submit" className={s.button} value="Войти" />
+                            </form>
                         </div>
-                    }
-                </div>
-                {user && pageItems && pageItems.length != 0 ?
-                    <div className={s.textsSection}>
-                        <p className={s.title}>Сохраненные результаты</p>
-                        <div className={s.textsList}>
-                            {pageItems.map((text) => (
-                                <TextCard getTexts={getTexts} key={text.id} text={text}/>
-                            ))}
-                        </div>
-                        <Pagination pageNumber={pageNumber} onPageChange={onPageChange} maxPages={maxPages}/>
+
                     </div>
-                    : null
-                }
+                </div>
             </div>
         </div>
     )
