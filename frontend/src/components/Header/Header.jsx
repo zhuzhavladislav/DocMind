@@ -1,13 +1,15 @@
 import React, {useContext} from 'react'
 import {Link} from 'react-router-dom'
 import s from './Header.module.css'
-import SidebarContext from '../../context/SidebarContext'
+import LoginContext from '../../context/LoginContext'
 import AuthContext from '../../context/AuthContext'
+import RegisterContext from '../../context/RegisterContext'
 
 
 const Header = () => {
-    const {user, logoutUser} = useContext(AuthContext)
-    const {setSidebar} = useContext(SidebarContext)
+    const {user, email, logoutUser} = useContext(AuthContext)
+    const { setLogin } = useContext(LoginContext)
+    const { setRegister } = useContext(RegisterContext)
     return (
         <header>
             <div className={s.head}>
@@ -33,7 +35,7 @@ const Header = () => {
                     <Link to="/">Главная</Link>
                     {user ?
                         <div className={s.account}>
-                            <Link to="/account"><strong>{user}</strong></Link>
+                            <Link to="/account"><strong>{email}</strong></Link>
                             <span onClick={logoutUser}>
                                 <svg width="18px" height="18px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g id="Interface / Exit">
@@ -43,7 +45,7 @@ const Header = () => {
                             </span>
                         </div>
                         :
-                        <div className={s.login}><strong onClick={() => setSidebar(true)}>Вход</strong>или<strong onClick={() => setSidebar(true)}>Регистрация</strong></div>
+                        <div className={s.login}><strong onClick={() => setLogin(true)}>Вход</strong>или<strong onClick={() => setRegister(true)}>Регистрация</strong></div>
                     }
                 </nav>
             </div>

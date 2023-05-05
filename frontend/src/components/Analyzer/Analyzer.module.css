@@ -10,13 +10,19 @@
 .tableFade{
   opacity: 0;
   visibility: hidden;
+  /* ? */
   position: absolute;
+  left: -1000px;
+  top: -1000px;
+  /* */
   transition: opacity 0.2s ease-out, visibility 0.2s ease-out;
 }
 .tableFade.show{
   opacity: 1;
   visibility: visible;
   position: relative;
+  top: 0px;
+  left: 0px;
   transition: opacity 1s ease-out, visibility 1s ease-out;
 }
 @-webkit-keyframes fade{
@@ -75,7 +81,7 @@
   margin-right: 15px;
   transition: all 0.4s ease;
   cursor: pointer;
-  transform: scale(0.95);
+  transform: scale(1);
   transition: 0.9s;
 }
 .fileInput1 + .fileInputLabel1 {
@@ -89,7 +95,7 @@
 
 .fileInput:focus + label,
 .fileInput + label:hover {
-  transform: scale(1);
+  transform: scale(1.02);
 }
 
 .textInput {
@@ -99,16 +105,18 @@
   box-sizing: border-box;
   border: 2px solid #e9e9e9;
   border-radius: 4px;
-  box-shadow: 2px 0 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 5px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.07), 0 3px 1px -2px rgba(0,0,0,0.05);
+  /* box-shadow: 2px 0 30px rgba(0, 0, 0, 0.1); */
   background-color: white;
   resize: vertical;
-  transform: scale(0.98);
-  transition: transform 0.9s;
+  transform: scale(1);
+  transition: all 0.9s;
 }
 .textInput:focus {
-  transform: scale(1);
+  transform: scale(1.02);
   border: 2px solid #e9e9e9;
-  box-shadow: 2px 0 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 15px 15px rgba(0,0,0,0.2), 0 2px 2px rgba(0,0,0,0.05), 0 3px 1px -2px rgba(0,0,0,0.06);
+  /* box-shadow: 2px 0 30px rgba(0, 0, 0, 0.2); */
 }
 .analyzeButtons{
   display: flex;

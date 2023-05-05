@@ -33,13 +33,14 @@ PUNCTUATION_MARKS = ['!', ',', '(', ')', ':', '-', '?', '.',
 
 # Load models
 word_to_index = joblib.load('./models/word_to_index')
-#semantic_naive_bayes = joblib.load('./models/semantic_naive_bayes.pkl')
-semantic_naive_bayes = joblib.load('./models/nb_grid.pkl')
+semantic_naive_bayes = joblib.load('./models/semantic_naive_bayes.pkl')
 semantic_svm = joblib.load('./models/semantic_svm.pkl')
 semantic_logistic_regression = joblib.load(
     './models/semantic_logistic_regression.pkl')
 sentiment_logistic_regression = joblib.load(
     './models/sentiment_logistic_regression.pkl')
+text_style = joblib.load(
+    './models/text_style.pkl')
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -49,6 +50,7 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # Add custom claims
         token['username'] = user.username
+        token['email'] = user.email
         token['id'] = user.id
         # ...
 
@@ -266,6 +268,8 @@ class Analyze(APIView):
         num_symbols_without_space = len(text.replace(' ', '').replace('\n', ''))
         # Считаем количество слов
         num_words = len(text.split())
+        # Определяем стиль текста
+        text_style_pred = text_style.predict([text])
         # Удаляем из текста пунктуацию, числа, и двойные пробелы
         text2analyze = remove_multiple_spaces(
             remove_numbers(remove_punctuation(text.lower())))
@@ -298,6 +302,7 @@ class Analyze(APIView):
                 "semantic": {"naiveBayes": semantic_naive_bayes_pred[0],
                              "supportVectorMachines": semantic_svm_pred[0],
                              "logisticRegression": semantic_logistic_regression_pred[0]},
+                "text_style": text_style_pred[0].capitalize(),
                 "num_symbols": num_symbols,
                 "num_symbols_without_space": num_symbols_without_space,
                 "num_words": num_words,

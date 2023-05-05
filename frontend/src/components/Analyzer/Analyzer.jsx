@@ -4,7 +4,7 @@ import st from './Table/Table.module.css'
 import axios from "axios";
 import Table from './Table/Table';
 import AuthContext from '../../context/AuthContext';
-import SidebarContext from '../../context/SidebarContext';
+import SidebarContext from '../../context/LoginContext';
 
 const Analyzer = () => {
   const { user, id, authTokens, logoutUser } = useContext(AuthContext)
@@ -122,14 +122,21 @@ const Analyzer = () => {
               </td>
             </tr>
             <tr>
+              <td>Стиль текста ✨<div className={s.hint} data-tooltip="Автоматическое определение стиля текста">?</div></td>
+              <td style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
+                <span className={st.highlight}>{analyzeInfo?.text_style}</span>
+              </td>
+            </tr>
+            <tr>
               <td>Тональность ✨<div className={s.hint} data-tooltip="Выявление в тексте эмоционально окрашенной лексики">?</div></td>
-              <td>{analyzeInfo?.sentiment[0] < 0.45
+              <td style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 10 }}><span className={st.highlight}>{analyzeInfo?.sentiment[0] < 0.45
                 ? "Позитивная"
                 : analyzeInfo?.sentiment[0] > 0.55
                   ? "Негативная"
                   : "Нейтральная"
               }
                 <div className={s.hint} data-tooltip={"Негативная (Вероятность: " + Math.round(analyzeInfo?.sentiment[0] * 100) + "%), Позитивная (Вероятность: " + Math.round(analyzeInfo?.sentiment[1] * 100) + "%)"}>?</div>
+              </span>
               </td>
             </tr>
             <tr>

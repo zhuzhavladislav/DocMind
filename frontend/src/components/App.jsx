@@ -1,24 +1,29 @@
-import { useState } from "react";
 import { BrowserRouter } from "react-router-dom"
 import { AuthProvider } from "../context/AuthContext";
-import { SidebarProvider } from "../context/SidebarContext";
+import { LoginProvider } from "../context/LoginContext";
+import { RegisterProvider } from "../context/RegisterContext";
 import './App.css';
 import AppRouter from "./AppRouter";
 import Footer from "./Footer/Footer";
 import Header from "./Header/Header";
-import Sidebar from "./SideBar/Sidebar";
+import LoginModal from "./Login/LoginModal";
+import RegisterModal from './Register/RegisterModal'
+
 
 const App = () => {
   return (
     <>
       <BrowserRouter>
         <AuthProvider>
-          <SidebarProvider>
-            <Header />
-            <AppRouter />
-            <Sidebar />
-            <Footer />
-          </SidebarProvider>
+          <LoginProvider>
+            <RegisterProvider>
+              <Header />
+              <AppRouter />
+              <LoginModal />
+              <RegisterModal />
+              <Footer />
+            </RegisterProvider>
+          </LoginProvider>
         </AuthProvider>
       </BrowserRouter>
     </>

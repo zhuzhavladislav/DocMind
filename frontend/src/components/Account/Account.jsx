@@ -5,10 +5,10 @@ import s from './Account.module.css'
 import ProfileTextCard from './ProfileTextCard/ProfileTextCard'
 
 const Account = () => {
-  const { user, authTokens, logoutUser } = useContext(AuthContext)
+  const { user, email, authTokens, logoutUser } = useContext(AuthContext)
   const [texts, setTexts] = useState()
 
-  const [pageSize, setPageSize] = useState(3)
+  const [pageSize, setPageSize] = useState(5)
   const [pageNumber, setPageNumber] = useState(1);
   const [maxPages, setMaxPages] = useState(1)
   const [startIndex, setStartIndex] = useState(1)
@@ -64,18 +64,32 @@ const Account = () => {
   }
 
   return (
-    <main>
-      {pageItems && pageItems.length != 0 ?
-        <div className={s.textsSection}>
-          <p className={s.title}>Сохраненные результаты</p>
-          <div className={s.textsList}>
-            {pageItems.map(text => (
-              <ProfileTextCard getTexts={getTexts} onPageChange={onPageChange} pageNumber={pageNumber} key={text.id} text={text} />
-            ))}
+    <main className={s.container}>
+      <section className={s.section}>
+        <div className={s.profileContainer}>
+          <div className={s.avatarContainer}>{user.charAt(0)}</div>
+          <div className={s.infoContainer}>
+            <p>Никнейм: {user}</p>
+            <p>Email: {email}</p>
           </div>
-          <Pagination pageNumber={pageNumber} onPageChange={onPageChange} maxPages={maxPages} />
         </div>
-        : null}
+      </section>
+      <section className={s.section}>
+        <p className={s.title}>Мои проверки</p>
+        {pageItems && pageItems.length != 0 ?
+          <>
+            <div className={s.texts}>
+              {pageItems.map(text => (
+                <ProfileTextCard getTexts={getTexts} onPageChange={onPageChange} pageNumber={pageNumber} key={text.id} text={text} />
+              ))}
+            </div>
+            <Pagination pageNumber={pageNumber} onPageChange={onPageChange} maxPages={maxPages} />
+          </>
+          : 
+          <p>
+                Пока проверок нет :(
+          </p>}
+      </section>
     </main>
   )
 }

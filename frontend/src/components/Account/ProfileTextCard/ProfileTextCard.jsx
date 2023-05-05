@@ -1,16 +1,18 @@
 import React, { useContext } from 'react'
-import {Link} from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import AuthContext from '../../../context/AuthContext';
-import SidebarContext from '../../../context/SidebarContext';
+import SidebarContext from '../../../context/LoginContext';
 import s from './ProfileTextCard.module.css'
+import CircularProgress from '../../CircularProgress/CircularProgress';
 
-const ProfileTextCard = ({ text, getTexts, onPageChange, pageNumber }) => {
+const ProfileTextCard = ({ text, getTexts }) => {
+    const navigate = useNavigate();
     const { setTextFromSidebar } = useContext(SidebarContext)
-    const {authTokens} = useContext(AuthContext)
+    const { authTokens } = useContext(AuthContext)
 
     const date = new Date(text.date);
     const localDateString = date.toLocaleString();
-    const waterPercent = Math.round(text.stop_words.count / text.num_words * 100) + "%"
+    const water = Math.round(text.stop_words.count / text.num_words * 100)
 
     const deleteCard = async (id) => {
         const response = await fetch(`http://localhost:8000/api/texts/${id}/`, {
@@ -31,30 +33,26 @@ const ProfileTextCard = ({ text, getTexts, onPageChange, pageNumber }) => {
     }
 
     return (
-        <div className={s.textCard}>
-            <svg width="25px" height="25px" className={s.delete} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" onClick={() => { deleteCard(text.id) }}>
-                <path fill="none" d="M9 7h9v11a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V7h3z" />
-                <path stroke="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7h-2M4 7h2m0 0h12M6 7v11a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V7m-9-.5v0A2.5 2.5 0 0 1 11.5 4h1A2.5 2.5 0 0 1 15 6.5v0" />
-            </svg>
-            <p className={s.date}>{localDateString}</p>
+        <div className={s.textCard} onDoubleClick={() => { navigate(`/`); setTextFromSidebar(text) }}>
+            <div className={s.top} >
+                <p>{text.text_style} стиль</p>
+                <p>В тексте {text.num_symbols} символов(-а), {text.num_words} слова</p>
+            </div>
             <p className={s.text}>{text.text}</p>
-            <div className={s.shortInfo}>
-                <div className={s.progress}>
-                    <p>Вода: {waterPercent}</p>
-                    <span style={{ width: waterPercent, backgroundColor: "skyblue" }}></span>
+            <div className={s.bottom}>
+                <div className={s.shortInfo}>
+                    <CircularProgress progress={100 - water} dataTooltip={`Водность текста ${water}%`} />
+                    <CircularProgress progress={Math.round(text.sentiment[1] * 100)} dataTooltip={"Тональность"} />
+                    <p className={s.date}>{localDateString}</p>
                 </div>
-                <div className={s.progress}>
-                    <p>{text.sentiment[0] < 0.45
-                        ? "Позитивный"
-                        : text.sentiment[0] > 0.55
-                            ? "Негативный"
-                            : "Нейтральный"
-                    }</p>
-                    <span style={{ width: "100%", backgroundColor: text.sentiment[0] > 0.55 ? "lightcoral" : text.sentiment[0] < 0.45 ? "darkseagreen" : "lightgray" }}></span>
+                <div className={s.miniButtons}>
+                    <div onClick={() => { navigate(`/`); setTextFromSidebar(text) }} >
+                        <p>Загрузить</p>
+                    </div>
+                    <div onClick={() => { deleteCard(text.id) }} >
+                        <p>Удалить</p>
+                    </div>
                 </div>
-                <Link to="/" className={s.load} onClick={() => setTextFromSidebar(text)}>
-                    <p>Загрузить</p>
-                </Link>
             </div>
 
         </div>

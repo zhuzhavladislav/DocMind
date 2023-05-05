@@ -9,6 +9,7 @@ export const AuthProvider = ({children}) => {
     const [authTokens, setAuthTokens] = useState(() => localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
     const [user, setUser] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')).username : null)
     const [id, setId] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')).id : null)
+    const [email, setEmail] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')).email : null)
     const [loading, setLoading] = useState(true)
 
     const loginUser = async (e) => {
@@ -25,9 +26,31 @@ export const AuthProvider = ({children}) => {
             setAuthTokens(data)
             setUser(jwt_decode(data.access).username)
             setId(jwt_decode(data.access).id)
+            setEmail(jwt_decode(data.access).email)
             localStorage.setItem('authTokens', JSON.stringify(data))
+            e.target.reset();
         } else {
             alert(data.detail)
+        }
+    }
+
+    const registerUser = async (e) => {
+        e.preventDefault();
+        const response = await fetch('http://localhost:8000/api/register/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 'email': e.target.email.value, 'username': e.target.username.value, 'password': e.target.password.value })
+        })
+        const data = await response.json();
+        console.log(response);
+        if (response.status === 201) {
+            loginUser(e)
+            e.target.reset();
+            alert(data)
+        } else {
+            alert(data)
         }
     }
 
@@ -35,6 +58,7 @@ export const AuthProvider = ({children}) => {
         setAuthTokens(null)
         setUser(null)
         setId(null)
+        setEmail(null)
         localStorage.removeItem('authTokens')
     }
 
@@ -52,6 +76,7 @@ export const AuthProvider = ({children}) => {
             setAuthTokens(data)
             setUser(jwt_decode(data.access).username)
             setId(jwt_decode(data.access).id)
+            setEmail(jwt_decode(data.access).email)
             localStorage.setItem('authTokens', JSON.stringify(data))
         } else {
             logoutUser()
@@ -65,7 +90,9 @@ export const AuthProvider = ({children}) => {
         user,
         authTokens,
         id,
+        email,
         loginUser,
+        registerUser,
         logoutUser
     }
 

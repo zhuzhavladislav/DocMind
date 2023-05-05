@@ -18,7 +18,7 @@
     color: white;
 }
 
-.sidebar{
+.modal{
     display: flex;
     position: fixed;
     left: 0;
@@ -34,7 +34,7 @@
     transition: all 0.3s ease-in-out;
     backdrop-filter: blur(1px);
 }
-.sidebar.show{
+.modal.show{
     opacity: 1;
     visibility: visible;
 }

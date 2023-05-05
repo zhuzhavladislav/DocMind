@@ -5,7 +5,7 @@ class TextSerializer(serializers.ModelSerializer):
     class Meta:
         model = Text
         # or fields = '__all__'
-        fields = ['user', 'id', 'text', 'semantic',
+        fields = ['user', 'id', 'text', 'semantic', 'text_style',
                   'num_symbols', 'num_symbols_without_space',
                   'num_words', 'stop_words', 'dictionary',
                   'sentiment', 'date']
