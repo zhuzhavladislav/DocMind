@@ -55,8 +55,8 @@ const Table = (props) => {
                             <td>{i+1}</td>
                             <td>{word?.word}</td>
                             <td>{word?.count}</td>
-                            <td>{(word?.count * 100 / props.analyzeInfo?.dictionary?.without_stop_words.length).toFixed(1)}%</td>
-                            <td>{(word?.count * 100 / props.analyzeInfo?.num_words).toFixed(1)}%</td>
+                            <td>{(word?.count * 100 / props.analyzeInfo?.dictionary?.withoutStopWords.length).toFixed(1)}%</td>
+                            <td>{(word?.count * 100 / props.analyzeInfo?.wordsCount).toFixed(1)}%</td>
                         </tr>
                     )) : null}
                 </tbody>

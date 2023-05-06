@@ -13,7 +13,7 @@ const plugins = [
     new MiniCssExtractPlugin(),
     new HtmlWebpackPlugin({template: "./src/index.html"}),
     new FaviconsWebpackPlugin({
-        logo: 'src/public/android-chrome-192x192.png',
+        logo: 'src/public/android-chrome-512x512.png',
         cache: false,
     })
 ]

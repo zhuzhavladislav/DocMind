@@ -116,15 +116,21 @@ const Analyzer = () => {
             <tr>
               <td>Тематика ✨<div className={s.hint} data-tooltip="Автоматическое определение тематики">?</div></td>
               <td style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
-                <span className={st.highlight}>{analyzeInfo?.semantic.naiveBayes}<div className={s.hint} data-tooltip="Наивный байесовский классификатор">?</div></span>
-                <span className={st.highlight}>{analyzeInfo?.semantic.supportVectorMachines}<div className={s.hint} data-tooltip="Метод опорных векторов">?</div></span>
-                <span className={st.highlight}>{analyzeInfo?.semantic.logisticRegression}<div className={s.hint} data-tooltip="Логистическая регрессия">?</div></span>
+                {analyzeInfo?.topic.map((topic, i) => (
+                  topic.prob >= 0.1 
+                  ? 
+                  <span key={`id_${i}`} className={st.highlight}>
+                    {topic.name} ({topic.prob}%)
+                  </span>
+                  :
+                  null
+                ))}
               </td>
             </tr>
             <tr>
               <td>Стиль текста ✨<div className={s.hint} data-tooltip="Автоматическое определение стиля текста">?</div></td>
               <td style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
-                <span className={st.highlight}>{analyzeInfo?.text_style}</span>
+                <span className={st.highlight}>{analyzeInfo?.style}</span>
               </td>
             </tr>
             <tr>
@@ -141,55 +147,55 @@ const Analyzer = () => {
             </tr>
             <tr>
               <td>Количество символов с пробелами<div className={s.hint} data-tooltip="Количество символов в тексте ВКЛЮЧАЯ пробелы">?</div></td>
-              <td>{analyzeInfo?.num_symbols}</td>
+              <td>{analyzeInfo?.symbolsCount}</td>
             </tr>
             <tr>
               <td>Количество символов (без пробелов)<div className={s.hint} data-tooltip="Количество символов в тексте БЕЗ учета пробелов">?</div></td>
-              <td>{analyzeInfo?.num_symbols_without_space}</td>
+              <td>{analyzeInfo?.symbolsWithoutSpaceCount}</td>
             </tr>
             <tr>
               <td>Количество слов<div className={s.hint} data-tooltip="Общее количество слов в тексте">?</div></td>
-              <td>{analyzeInfo?.num_words}</td>
+              <td>{analyzeInfo?.wordsCount}</td>
             </tr>
             <tr>
               <td>Количество стоп-слов<div className={s.hint} data-tooltip="Общее количество слов не несущих информационную нагрузку">?</div></td>
-              <td>{analyzeInfo?.stop_words.count}</td>
+              <td>{analyzeInfo?.stopWords.count}</td>
             </tr>
             <tr>
               <td>Водность<div className={s.hint} data-tooltip="Показывает процент слов не несущих информационную нагрузку (водность)">?</div></td>
-              <td>{Math.round(analyzeInfo?.stop_words.count / analyzeInfo?.num_words * 100)}%</td>
+              <td>{Math.round(analyzeInfo?.stopWords.count / analyzeInfo?.wordsCount * 100)}%</td>
             </tr>
             <tr>
               <td>Словарь<div className={s.hint} data-tooltip="Количество слов употребляющихся в тексте">?</div></td>
-              <td>{analyzeInfo?.dictionary.with_stop_words.length}</td>
+              <td>{analyzeInfo?.dictionary.withStopWords.length}</td>
             </tr>
             <tr>
               <td>Словарь ядра<div className={s.hint} data-tooltip="Количество РАЗНЫХ слов исключая стоп-слова">?</div></td>
-              <td>{analyzeInfo?.dictionary.without_stop_words.length}</td>
+              <td>{analyzeInfo?.dictionary.withoutStopWords.length}</td>
             </tr>
           </tbody>
         </table>
       </section>
       <section className={analyzeInfo ? `${s.section} ${s.tableFade} ${s.show}` : `${s.section} ${s.tableFade}`}>
         <div className={s.filter}>
-          {analyzeInfo?.dictionary.without_stop_words != 0 ? <><input type="radio" id="category1" name="category" value="noStopWords" checked={category == "noStopWords"} onChange={(e) => setCategory(e.target.value)} />
+          {analyzeInfo?.dictionary.withoutStopWords != 0 ? <><input type="radio" id="category1" name="category" value="noStopWords" checked={category == "noStopWords"} onChange={(e) => setCategory(e.target.value)} />
             <label htmlFor="category1">Без стоп-слов</label></> : null}
-          {analyzeInfo?.dictionary.with_stop_words != 0 ? <><input type="radio" id="category2" name="category" value="withStopWords" checked={category == "withStopWords"} onChange={(e) => setCategory(e.target.value)} />
+          {analyzeInfo?.dictionary.withStopWords != 0 ? <><input type="radio" id="category2" name="category" value="withStopWords" checked={category == "withStopWords"} onChange={(e) => setCategory(e.target.value)} />
             <label htmlFor="category2">Со стоп-словами</label></> : null}
-          {analyzeInfo?.stop_words.count != 0 ? <><input type="radio" id="category3" name="category" value="stopWords" checked={category == "stopWords"} onChange={(e) => setCategory(e.target.value)} />
+          {analyzeInfo?.stopWords.count != 0 ? <><input type="radio" id="category3" name="category" value="stopWords" checked={category == "stopWords"} onChange={(e) => setCategory(e.target.value)} />
             <label htmlFor="category3">Стоп-слова</label></> : null}
-          {analyzeInfo?.dictionary.without_stop_words != 0 ? <><input type="radio" id="category4" name="category" value="dictionary" checked={category == "dictionary"} onChange={(e) => setCategory(e.target.value)} />
+          {analyzeInfo?.dictionary.withStopWords != 0 ? <><input type="radio" id="category4" name="category" value="dictionary" checked={category == "dictionary"} onChange={(e) => setCategory(e.target.value)} />
             <label htmlFor="category4">Словарь</label></> : null}
         </div>
         <div>
           {category == "noStopWords"
-            ? <Table words={analyzeInfo?.dictionary.without_stop_words} analyzeInfo={analyzeInfo} />
+            ? <Table words={analyzeInfo?.dictionary.withoutStopWords} analyzeInfo={analyzeInfo} />
             : category == "withStopWords"
-              ? <Table words={analyzeInfo?.dictionary.with_stop_words} analyzeInfo={analyzeInfo} />
+              ? <Table words={analyzeInfo?.dictionary.withStopWords} analyzeInfo={analyzeInfo} />
               : category == "stopWords"
-                ? <Table words={analyzeInfo?.stop_words.list} analyzeInfo={analyzeInfo} />
+                ? <Table words={analyzeInfo?.stopWords.list} analyzeInfo={analyzeInfo} />
                 : category == "dictionary"
-                  ? <textarea style={{ marginTop: 10, width: "100%", height: "200px", resize: "vertical" }} defaultValue={analyzeInfo?.dictionary.without_stop_words.map((word, i) => i == 0 ? word.word : " " + word.word)}></textarea>
+                  ? <textarea style={{ marginTop: 10, width: "100%", height: "200px", resize: "vertical" }} defaultValue={analyzeInfo?.dictionary.withStopWords.map((word, i) => i == 0 ? word.word : " " + word.word)}></textarea>
                   : null
           }
         </div>

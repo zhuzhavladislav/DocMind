@@ -1,5 +1,6 @@
 from .serializers import *
 from ..models import *
+import pickle
 import os
 import io
 import string
@@ -9,6 +10,7 @@ import re
 import nltk
 import speech_recognition as sr
 import numpy as np
+from keras.models import load_model
 from nltk.stem import *
 from nltk.corpus import stopwords
 from nltk import word_tokenize
@@ -22,6 +24,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth.hashers import make_password
+from sklearn.preprocessing import LabelEncoder
 
 nltk.download('punkt')
 nltk.download("stopwords")
@@ -32,48 +35,63 @@ PUNCTUATION_MARKS = ['!', ',', '(', ')', ':', '-', '?', '.',
                      '--', '­', ' ', ' ', '�', '”', '“', '×', '№', 'т.д.']
 
 # Load models
-word_to_index = joblib.load('./models/word_to_index')
-semantic_naive_bayes = joblib.load('./models/semantic_naive_bayes.pkl')
-semantic_svm = joblib.load('./models/semantic_svm.pkl')
-semantic_logistic_regression = joblib.load(
-    './models/semantic_logistic_regression.pkl')
-sentiment_logistic_regression = joblib.load(
-    './models/sentiment_logistic_regression.pkl')
-text_style = joblib.load(
-    './models/text_style.pkl')
+style_classifier = load_model('./models/Style/style_text_classifier.h5')
+with open('./models/Style/style_vectorizer.pkl', 'rb') as f:
+    style_vectorizer = pickle.load(f)
+with open('./models/Style/style_label_encoder.pkl', 'rb') as f:
+    style_label_encoder = pickle.load(f)
+
+topic_classifier = load_model('./models/Topic/topic_text_classifier.h5')
+with open('./models/Topic/topic_vectorizer.pkl', 'rb') as f:
+    topic_vectorizer = pickle.load(f)
+with open('./models/Topic/topic_label_encoder.pkl', 'rb') as f:
+    topic_label_encoder = pickle.load(f)
+
+sentiment_classifier = load_model('./models/Sentiment/sentiment_text_classifier.h5')
+with open('./models/Sentiment/sentiment_vectorizer.pkl', 'rb') as f:
+    sentiment_vectorizer = pickle.load(f)
+with open('./models/Sentiment/sentiment_label_encoder.pkl', 'rb') as f:
+    sentiment_label_encoder = pickle.load(f)
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-
         # Add custom claims
         token['username'] = user.username
         token['email'] = user.email
         token['id'] = user.id
         # ...
-
         return token
+
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
 
 # ---Семантический анализ---#
- 
+
 # Удаление знаков препинаний
+
+
 def remove_punctuation(text):
     return "".join([ch if ch not in string.punctuation and ch not in PUNCTUATION_MARKS else ' ' for ch in text])
 
 # Удаление чисел
+
+
 def remove_numbers(text):
     return ''.join([i if not i.isdigit() else ' ' for i in text])
 
 # Удаление двойных пробелов
+
+
 def remove_multiple_spaces(text):
     return re.sub(r'\s+', ' ', text, flags=re.I)
 
 # Лемматизация текста
+
+
 def lemmatize_text(text):
     mystem = Mystem()
     text_lem = mystem.lemmatize(text)
@@ -81,6 +99,8 @@ def lemmatize_text(text):
     return " ".join(tokens)
 
 # Составление словаря
+
+
 def dictionary_generate(text):
     tokens = word_tokenize(text)
     dictionary = [token for token in tokens if token != ' ']
@@ -107,9 +127,11 @@ def dictionary_generate(text):
 
     for key, value in word_count.items():
         dictionary_core_result.append({"word": key, "count": value})
-    return {"with_stop_words": dictionary_result or 0, "without_stop_words": dictionary_core_result or 0}
+    return {"withStopWords": dictionary_result or 0, "withoutStopWords": dictionary_core_result or 0}
 
 # Поиск стоп-слов
+
+
 def find_stop_words(text):
     tokens = word_tokenize(text)
     text_stop_words = [
@@ -127,23 +149,27 @@ def find_stop_words(text):
     return {"list": result or 0, "count": count}
 
 # Удаление стоп-слов
+
+
 def remove_stop_words(text):
     tokens = word_tokenize(text)
     tokens = [
         token for token in tokens if token not in RUSSIAN_STOPWORDS and token != ' ']
     return " ".join(tokens)
 
-# ---Анализ тональности---#
-# Препроцесс
-def preprocess(text, stop_words, punctuation_marks, morph):
+# ---Анализ тональности---
+
+
+def preprocess(text, stop_words, morph):  # Препроцесс
     tokens = word_tokenize(text.lower())
     preprocessed_text = []
     for token in tokens:
-        if token not in punctuation_marks:
+        if token not in PUNCTUATION_MARKS:
             lemma = morph.parse(token)[0].normal_form
             if lemma not in stop_words:
                 preprocessed_text.append(lemma)
     return preprocessed_text
+
 
 # Функция для преобразования списка слов в список кодов
 def text_to_sequence(txt, word_to_index):
@@ -155,19 +181,61 @@ def text_to_sequence(txt, word_to_index):
             seq.append(index)
     return seq
 
-# Создаем мешок слов
-def vectorize_sequences(sequences, dimension=10000):
+
+def vectorize_sequences(sequences, dimension=10000):  # Создаем мешок слов
     results = np.zeros((len(sequences), dimension))
     for i, sequence in enumerate(sequences):
         for index in sequence:
             results[i, index] += 1.
     return results
 
+
+def predict_topic(text):  # предсказание тематики
+    # преобразование текста в вектор признаков
+    X = topic_vectorizer.transform([text]).toarray()
+
+    # предсказание тематики
+    y_pred = topic_classifier.predict(X)
+    n_predictions = 3  # количество предсказаний, которые вы хотите получить
+
+    # получение топ-n тематик
+    result = []
+    top_n_preds = y_pred[0].argsort()[::-1][:n_predictions]
+    for i, pred in enumerate(top_n_preds):
+        name = topic_label_encoder.inverse_transform([pred])[0]
+        prob = y_pred[0][pred]
+        result.append({"name": name.capitalize(),
+                      "prob": "{:.1f}".format(prob * 100)})
+    return result
+
+
+def predict_style(text):  # предсказание стиля
+    # преобразование текста в вектор признаков
+    X = style_vectorizer.transform([text]).toarray()
+
+    # предсказание стиля
+    y_pred = style_classifier.predict(X)
+    y_pred_label = np.argmax(y_pred)
+    result = style_label_encoder.inverse_transform([y_pred_label])[0]
+    return result.capitalize()
+
+
+def predict_sentiment(text):  # предсказание стиля
+    # преобразование текста в вектор признаков
+    X = sentiment_vectorizer.transform([text]).toarray()
+
+    # предсказание стиля
+    y_pred = sentiment_classifier.predict(X)
+    result = list(y_pred[0])
+    return result
+
 # Create your views here.
+
+
 @permission_classes([IsAuthenticated])
 class UserTexts(APIView):
     def get(self, request):
-        user=request.user
+        user = request.user
         texts = user.text_set.all().order_by('-id')
         serializer = TextSerializer(texts, many=True)
         return Response(serializer.data)
@@ -179,7 +247,8 @@ class UserTexts(APIView):
             return Response(serializer.data)
         else:
             return Response(serializer.error_messages[0], status=status.HTTP_400_BAD_REQUEST)
-        
+
+
 @permission_classes([IsAuthenticated])
 class UserText(APIView):
     def get(self, request, text_num):
@@ -191,6 +260,7 @@ class UserText(APIView):
 
         serializer = TextSerializer(text)
         return Response(serializer.data)
+
     def delete(self, request, text_num):
         try:
             user = request.user
@@ -201,7 +271,8 @@ class UserText(APIView):
         text.delete()  # удаление текста из базы данных
 
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
+
 class RegisterUser(APIView):
     def post(self, request):
         if request.method == 'POST':
@@ -221,7 +292,7 @@ class RegisterUser(APIView):
             return Response('Регистрация прошла успешно.',
                             status=status.HTTP_201_CREATED)
 
-# Тематический анализ текста, полученного от фронтэнда
+
 class Analyze(APIView):
     def post(self, request):
         # Получаем текст от фронтенда
@@ -252,7 +323,7 @@ class Analyze(APIView):
                 with audio_file as source:
                     audio = r.record(source)
                     text = r.recognize_google(audio, language="ru-RU")
-            else: 
+            else:
                 # Неверный формат файла
                 return Response('Неверный формат файла. Доступен анализ (.wav)', status=status.HTTP_400_BAD_REQUEST)
         elif 'text' in request.POST:  # Если входные данные - текст
@@ -265,49 +336,38 @@ class Analyze(APIView):
         # Считаем количество симоволов
         num_symbols = len(text.replace('\n', ''))
         # Считаем количество символов без пробела
-        num_symbols_without_space = len(text.replace(' ', '').replace('\n', ''))
+        num_symbols_without_space = len(
+            text.replace(' ', '').replace('\n', ''))
         # Считаем количество слов
         num_words = len(text.split())
-        # Определяем стиль текста
-        text_style_pred = text_style.predict([text])
         # Удаляем из текста пунктуацию, числа, и двойные пробелы
-        text2analyze = remove_multiple_spaces(
+        text_prepared = remove_multiple_spaces(
             remove_numbers(remove_punctuation(text.lower())))
         # Составляем словарь
-        dictionary = dictionary_generate(lemmatize_text(text2analyze))
+        dictionary = dictionary_generate(lemmatize_text(text_prepared))
         # Ищем стоп слова и удаляем их
-        stop_words = find_stop_words(text2analyze)
-        text2analyze = remove_stop_words(text2analyze)
+        stop_words = find_stop_words(text_prepared)
+        text_prepared = remove_stop_words(text_prepared)
+
         # Лемматизируем текст
-        text2analyze = lemmatize_text(text2analyze)
-
-        # Обрабатываем текст для ТОНА
-        morph = pymorphy2.MorphAnalyzer()
-        preprocessed_text = preprocess(
-            text, stop_words, PUNCTUATION_MARKS, morph)
-        seq = text_to_sequence(preprocessed_text, word_to_index)
-        bow = vectorize_sequences([seq], 10000)  # max 10000 слов
-
+        text_lemmatized = lemmatize_text(text_prepared) 
         # Получаем предположение
-        semantic_naive_bayes_pred = semantic_naive_bayes.predict([text2analyze])
-        semantic_svm_pred = semantic_svm.predict([text2analyze])
-        semantic_logistic_regression_pred = semantic_logistic_regression.predict([text2analyze])
-        sentiment_logistic_regression_pred = sentiment_logistic_regression.predict_proba(
-            bow)
-        if (text2analyze == ""):
+        style = predict_style(text) # Определяем стиль текста
+        topic = predict_topic(text_prepared) # Определяем стиль текста
+        sentiment = predict_sentiment(text_lemmatized) # Определяем тон текста
+
+        if (text_lemmatized == ""):
             result = 0
         else:
             result = {
                 "text": text,
-                "semantic": {"naiveBayes": semantic_naive_bayes_pred[0],
-                             "supportVectorMachines": semantic_svm_pred[0],
-                             "logisticRegression": semantic_logistic_regression_pred[0]},
-                "text_style": text_style_pred[0].capitalize(),
-                "num_symbols": num_symbols,
-                "num_symbols_without_space": num_symbols_without_space,
-                "num_words": num_words,
-                "stop_words": stop_words,
+                "topic": topic,
+                "style": style,
+                "symbolsCount": num_symbols,
+                "symbolsWithoutSpaceCount": num_symbols_without_space,
+                "wordsCount": num_words,
+                "stopWords": stop_words,
                 "dictionary": dictionary,
-                "sentiment": sentiment_logistic_regression_pred[0],
+                "sentiment": sentiment,
             }
         return Response(result)

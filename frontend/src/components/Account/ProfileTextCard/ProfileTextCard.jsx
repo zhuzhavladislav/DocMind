@@ -12,7 +12,7 @@ const ProfileTextCard = ({ text, getTexts }) => {
 
     const date = new Date(text.date);
     const localDateString = date.toLocaleString();
-    const water = Math.round(text.stop_words.count / text.num_words * 100)
+    const water = Math.round(text.stopWords.count / text.wordsCount * 100)
 
     const deleteCard = async (id) => {
         const response = await fetch(`http://localhost:8000/api/texts/${id}/`, {
@@ -35,8 +35,8 @@ const ProfileTextCard = ({ text, getTexts }) => {
     return (
         <div className={s.textCard} onDoubleClick={() => { navigate(`/`); setTextFromSidebar(text) }}>
             <div className={s.top} >
-                <p>{text.text_style} стиль</p>
-                <p>В тексте {text.num_symbols} символов(-а), {text.num_words} слова</p>
+                <p>{text.style} стиль</p>
+                <p>В тексте {text.symbolsCount} символов(-а), {text.wordsCount} слова</p>
             </div>
             <p className={s.text}>{text.text}</p>
             <div className={s.bottom}>
