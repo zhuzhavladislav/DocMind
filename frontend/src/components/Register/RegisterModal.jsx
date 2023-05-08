@@ -17,10 +17,10 @@ const Register = () => {
                 <div className={s.section}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
                         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                            <form onSubmit={(e)=> {setRegister(false); registerUser(e)}} className={s.loginForm}>
-                                <input required type="email" name="email" placeholder='Введите email' className={s.input} />
+                            <form onSubmit={(e)=> {registerUser(e)}} className={s.loginForm}>
+                                <input required type="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" placeholder='Введите email' className={s.input} />
                                 <input required type="text" name="username" placeholder='Введите имя пользователя' className={s.input} />
-                                <input required type="password" name='password' placeholder='Введите пароль' className={s.input} />
+                                <input required type="password" name='password' pattern="^\w{4,20}$" placeholder='Введите пароль' className={s.input} />
                                 <input type="submit" className={s.button} value="Зарегистрироваться" />
                             </form>
                         </div>

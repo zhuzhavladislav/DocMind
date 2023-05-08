@@ -1,0 +1,12 @@
+.alertContainer {
+  max-width: 320px;
+  min-width: 100px;
+  width: 100%;
+  position: fixed;
+  bottom: 30px;
+  left: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 99;
+}

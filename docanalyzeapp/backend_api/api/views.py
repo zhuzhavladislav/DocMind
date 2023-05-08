@@ -54,21 +54,6 @@ with open('./models/Sentiment/sentiment_label_encoder.pkl', 'rb') as f:
     sentiment_label_encoder = pickle.load(f)
 
 
-class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
-    @classmethod
-    def get_token(cls, user):
-        token = super().get_token(user)
-        # Add custom claims
-        token['username'] = user.username
-        token['email'] = user.email
-        token['id'] = user.id
-        # ...
-        return token
-
-
-class MyTokenObtainPairView(TokenObtainPairView):
-    serializer_class = MyTokenObtainPairSerializer
-
 # ---Семантический анализ---#
 
 # Удаление знаков препинаний
@@ -230,7 +215,20 @@ def predict_sentiment(text):  # предсказание стиля
     return result
 
 # Create your views here.
+class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
+    @classmethod
+    def get_token(cls, user):
+        token = super().get_token(user)
+        # Add custom claims
+        token['username'] = user.username
+        token['email'] = user.email
+        token['id'] = user.id
+        # ...
+        return token
 
+
+class MyTokenObtainPairView(TokenObtainPairView):
+    serializer_class = MyTokenObtainPairSerializer
 
 @permission_classes([IsAuthenticated])
 class UserTexts(APIView):
@@ -282,15 +280,19 @@ class RegisterUser(APIView):
             if not username or not password or not email:
                 return Response('Пожалуйста заполните все поля!',
                                 status=status.HTTP_400_BAD_REQUEST)
-            try:
-                user = User.objects.create(
-                    username=username, email=email, password=make_password(password))
-                user.save()
-            except:
-                return Response('Пользователь с данным логином существует.',
+            if not User.objects.filter(email=email).exists():
+                try:
+                    user = User.objects.create(
+                        username=username, email=email, password=make_password(password))
+                    user.save()
+                except:
+                    return Response('Пользователь с данным логином уже существует.',
+                                    status=status.HTTP_400_BAD_REQUEST)
+                return Response('Регистрация прошла успешно.',
+                                status=status.HTTP_201_CREATED)
+            else:
+                return Response('Пользователь с данной почтой уже существует.',
                                 status=status.HTTP_400_BAD_REQUEST)
-            return Response('Регистрация прошла успешно.',
-                            status=status.HTTP_201_CREATED)
 
 
 class Analyze(APIView):

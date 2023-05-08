@@ -17,9 +17,9 @@ const Login = () => {
                 <div className={s.section}>
                     <div style={{ display: "flex", flexDirection: "column", gap: 30 }}>
                         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                            <form onSubmit={(e)=>{ loginUser(e); setLogin(false)}} className={s.loginForm}>
+                            <form onSubmit={(e)=>{ loginUser(e) }} className={s.loginForm}>
                                 <input required type="text" name="username" placeholder='Введите имя пользователя' className={s.input} />
-                                <input required type="password" name='password' placeholder='Введите пароль' className={s.input} />
+                                <input required type="password" name='password' pattern="^\w{4,20}$" placeholder='Введите пароль' className={s.input} />
                                 <input type="submit" className={s.button} value="Войти" />
                             </form>
                         </div>

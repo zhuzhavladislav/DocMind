@@ -1,5 +1,9 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import jwt_decode from 'jwt-decode'
+import RegisterContext from "./RegisterContext";
+import LoginContext from "./LoginContext";
+import AlertContext from "./AlertContext";
+import axios from 'axios';
 
 const AuthContext = createContext()
 
@@ -11,48 +15,59 @@ export const AuthProvider = ({children}) => {
     const [id, setId] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')).id : null)
     const [email, setEmail] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')).email : null)
     const [loading, setLoading] = useState(true)
+    const { register, setRegister } = useContext(RegisterContext)
+    const {setLogin} = useContext(LoginContext)
+    const { alerts, setAlerts } = useContext(AlertContext)
 
     const loginUser = async (e) => {
-        e.preventDefault()
-        const response = await fetch('http://localhost:8000/api/token/', {
-            method: 'POST',
-            headers: {
-                'Content-Type':'application/json'
-            },
-            body: JSON.stringify({'username':e.target.username.value,'password':e.target.password.value})
-        })
-        const data = await response.json()
-        if(response.status === 200){
-            setAuthTokens(data)
-            setUser(jwt_decode(data.access).username)
-            setId(jwt_decode(data.access).id)
-            setEmail(jwt_decode(data.access).email)
-            localStorage.setItem('authTokens', JSON.stringify(data))
-            e.target.reset();
-        } else {
-            alert(data.detail)
+        e.preventDefault();
+        try {
+            const response = await axios.post('http://localhost:8000/api/token/', {
+                'username': e.target.username.value,
+                'password': e.target.password.value
+            });
+            const data = response.data;
+            if (response.status === 200) {
+                setAuthTokens(data);
+                setUser(jwt_decode(data.access).username);
+                setId(jwt_decode(data.access).id);
+                setEmail(jwt_decode(data.access).email);
+                localStorage.setItem('authTokens', JSON.stringify(data));
+                e.target.reset();
+                setLogin(false);
+                setAlerts([...alerts, { id: Date.now(), message: "Вы успешно авторизовались", type: 'correct' }]);
+            }
+        } catch (error) {
+            const response = error.response;
+            if (response.status === 401) {
+                setAlerts([...alerts, { id: Date.now(), message: "Неверное имя пользователя или пароль", type: 'error' }]);
+            } else {
+                setAlerts([...alerts, { id: Date.now(), message: "Что-то пошло не так", type: 'error' }]);
+            }
         }
-    }
+    };
+
 
     const registerUser = async (e) => {
         e.preventDefault();
-        const response = await fetch('http://localhost:8000/api/register/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 'email': e.target.email.value, 'username': e.target.username.value, 'password': e.target.password.value })
-        })
-        const data = await response.json();
-        console.log(response);
-        if (response.status === 201) {
-            loginUser(e)
-            e.target.reset();
-            alert(data)
-        } else {
-            alert(data)
+        try {
+            const response = await axios.post('http://localhost:8000/api/register/', {
+                email: e.target.email.value,
+                username: e.target.username.value,
+                password: e.target.password.value
+            });
+            if (response.status === 201) {
+                loginUser(e);
+                setRegister(false);
+                e.target.reset();
+            }
+        } catch (error) {
+            console.log(error);
+            const message = error.response.data;
+            setAlerts([...alerts, { id: Date.now(), message: message, type: 'error' }]);
         }
-    }
+    };
+
 
     const logoutUser = () => {
         setAuthTokens(null)
@@ -60,29 +75,34 @@ export const AuthProvider = ({children}) => {
         setId(null)
         setEmail(null)
         localStorage.removeItem('authTokens')
+        setAlerts([...alerts, { id: Date.now(), message: "Вы вышли из аккаунта", type: 'info' }])
     }
 
-    const updateToken = async () =>{
-        const response = await fetch('http://localhost:8000/api/token/refresh/', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ 'refresh': authTokens.refresh })
-        })
-        const data = await response.json()
-
-        if (response.status === 200){
-            setAuthTokens(data)
-            setUser(jwt_decode(data.access).username)
-            setId(jwt_decode(data.access).id)
-            setEmail(jwt_decode(data.access).email)
-            localStorage.setItem('authTokens', JSON.stringify(data))
-        } else {
-            logoutUser()
-        }
-        if(loading){
-            setLoading(false)
+    const updateToken = async () => {
+        try {
+            const response = await axios.post('http://localhost:8000/api/token/refresh/', {
+                'refresh': authTokens.refresh
+            }, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const data = response.data;
+            if (response.status === 200) {
+                setAuthTokens(data)
+                setUser(jwt_decode(data.access).username)
+                setId(jwt_decode(data.access).id)
+                setEmail(jwt_decode(data.access).email)
+                localStorage.setItem('authTokens', JSON.stringify(data))
+            } else {
+                logoutUser()
+                setAlerts([...alerts, { id: Date.now(), message: "Сессия истекла. Выполнен выход из аккаунта.", type: 'info' }])
+            }
+            if (loading) {
+                setLoading(false)
+            }
+        } catch (error) {
+            console.error(error);
         }
     }
 

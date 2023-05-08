@@ -2,7 +2,9 @@ import React, { useEffect, useContext, useState } from 'react'
 import AuthContext from '../../context/AuthContext'
 import Pagination from '../Pagination/Pagination'
 import s from './Account.module.css'
+import axios from 'axios';
 import ProfileTextCard from './ProfileTextCard/ProfileTextCard'
+import AlertContext from '../../context/AlertContext';
 
 const Account = () => {
   const { user, email, authTokens, logoutUser } = useContext(AuthContext)
@@ -13,6 +15,7 @@ const Account = () => {
   const [maxPages, setMaxPages] = useState(1)
   const [startIndex, setStartIndex] = useState(1)
   const [pageItems, setPageItems] = useState()
+  const {alerts, setAlerts} = useContext(AlertContext)
 
 
   useEffect(() => {
@@ -44,24 +47,27 @@ const Account = () => {
   }
 
   const getTexts = async () => {
-    if (authTokens) {
-      const response = await fetch('http://localhost:8000/api/texts/', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + String(authTokens.access)
-        }
-      })
-      if (response.ok) {
-        const data = await response.json()
-        setTexts(data)
+    try {
+      if (authTokens) {
+        const response = await axios.get('http://localhost:8000/api/texts/', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + String(authTokens.access)
+          }
+        });
+        setTexts(response.data);
       } else {
-        logoutUser()
+        setTexts(null);
       }
-    } else {
-      setTexts(null)
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        logoutUser();
+      } else {
+        setAlerts([...alerts, { id: Date.now(), message: `${error}`, type: 'error' }])
+      }
     }
   }
+
 
   return (
     <main className={s.container}>

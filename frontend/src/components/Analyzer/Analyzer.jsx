@@ -5,18 +5,23 @@ import axios from "axios";
 import Table from './Table/Table';
 import AuthContext from '../../context/AuthContext';
 import SidebarContext from '../../context/LoginContext';
+import AlertContext from '../../context/AlertContext';
 
 const Analyzer = () => {
+  
   const { user, id, authTokens, logoutUser } = useContext(AuthContext)
   const { textFromSidebar, setTextFromSidebar } = useContext(SidebarContext)
+  const { alerts, setAlerts } = useContext(AlertContext)
   const [text, setText] = useState("")
   const [analyzeInfo, setAnalyzeInfo] = useState()
   const [category, setCategory] = useState("noStopWords")
   const [isLoading, setIsLoading] = useState(false)
+  const [duration, setDuration] = useState(0)
   const sectionRef = useRef(null)
 
   //Формируем POST запрос к серверу Django, и получаем ответ в виде данных
   const analyzeText = (e, format) => {
+    const startTime = performance.now();
     setIsLoading(true)
     const data = new FormData();
     if (e.target.files && e.target.files.length > 0) {
@@ -40,6 +45,7 @@ const Analyzer = () => {
     axios
       .post('http://localhost:8000/api/analyze/', data)
       .then((res) => {
+        setDuration(((performance.now() - startTime)/1000).toFixed(2))
         setAnalyzeInfo(res.data);
         setText(res.data.text)
         setIsLoading(false)
@@ -62,12 +68,11 @@ const Analyzer = () => {
           },
         })
         .then((res) => {
-          alert('Успешно сохранено');
+          setAlerts([...alerts, { id: Date.now(), message: "Проверка сохранена", type: 'correct' }])
           setIsLoading(false)
         })
         .catch((err) => {
-          console.log(err);
-          alert(err.response?.data?.text || 'Непредвиденная ошибка');
+          setAlerts([...alerts, { id: Date.now(), message: `${err.response?.data?.text || 'Непредвиденная ошибка'}`, type: 'error' }])
           setIsLoading(false);
         });
     } else {
@@ -135,9 +140,9 @@ const Analyzer = () => {
             </tr>
             <tr>
               <td>Тональность ✨<div className={s.hint} data-tooltip="Выявление в тексте эмоционально окрашенной лексики">?</div></td>
-              <td style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 10 }}><span className={st.highlight}>{analyzeInfo?.sentiment[0] < 0.45
+              <td style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", gap: 10 }}><span className={st.highlight}>{analyzeInfo?.sentiment[0] < 0.35
                 ? "Позитивная"
-                : analyzeInfo?.sentiment[0] > 0.55
+                : analyzeInfo?.sentiment[0] > 0.65
                   ? "Негативная"
                   : "Нейтральная"
               }
@@ -173,6 +178,11 @@ const Analyzer = () => {
               <td>Словарь ядра<div className={s.hint} data-tooltip="Количество РАЗНЫХ слов исключая стоп-слова">?</div></td>
               <td>{analyzeInfo?.dictionary.withoutStopWords.length}</td>
             </tr>
+            <tr>
+              <td>Время анализа</td>
+              <td>{duration}с</td>
+            </tr>
+            
           </tbody>
         </table>
       </section>

@@ -2,6 +2,8 @@ import React, { useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthContext from '../../../context/AuthContext';
 import SidebarContext from '../../../context/LoginContext';
+import AlertContext from '../../../context/AlertContext';
+import axios from "axios";
 import s from './ProfileTextCard.module.css'
 import CircularProgress from '../../CircularProgress/CircularProgress';
 
@@ -9,28 +11,34 @@ const ProfileTextCard = ({ text, getTexts }) => {
     const navigate = useNavigate();
     const { setTextFromSidebar } = useContext(SidebarContext)
     const { authTokens } = useContext(AuthContext)
+    const { alerts, setAlerts } = useContext(AlertContext)
 
     const date = new Date(text.date);
     const localDateString = date.toLocaleString();
     const water = Math.round(text.stopWords.count / text.wordsCount * 100)
 
     const deleteCard = async (id) => {
-        const response = await fetch(`http://localhost:8000/api/texts/${id}/`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + String(authTokens.access)
-            },
-        })
-        if (response.status === 204) {
-            alert("Удаление прошло успешно")
-            getTexts()
-        } else if (response.status === 404) {
-            alert("Текст с указанным id не найден")
-        } else {
-            alert("Произошла ошибка")
+        try {
+            const response = await axios.delete(`http://localhost:8000/api/texts/${id}/`, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + String(authTokens.access)
+                }
+            });
+            console.log(response);
+            if (response.status === 204) {
+                setAlerts([...alerts, { id: Date.now(), message: "Проверка удалена", type: 'correct' }])
+                getTexts()
+            } else if (response.status === 404) {
+                setAlerts([...alerts, { id: Date.now(), message: "Проверка с указанным id не найден", type: 'error' }])
+            } else {
+                setAlerts([...alerts, { id: Date.now(), message: `Response code: ${response.status}, Data: ${response.data}`, type: 'error' }])
+            }
+        } catch (error) {
+            setAlerts([...alerts, { id: Date.now(), message: error.message, type: 'error' }])
         }
     }
+
 
     return (
         <div className={s.textCard} onDoubleClick={() => { navigate(`/`); setTextFromSidebar(text) }}>
