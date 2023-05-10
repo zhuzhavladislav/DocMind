@@ -15,8 +15,8 @@ export const AuthProvider = ({children}) => {
     const [id, setId] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')).id : null)
     const [email, setEmail] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')).email : null)
     const [loading, setLoading] = useState(true)
-    const { register, setRegister } = useContext(RegisterContext)
-    const {setLogin} = useContext(LoginContext)
+    const { setIsRegisterShow } = useContext(RegisterContext)
+    const {setIsLoginShow} = useContext(LoginContext)
     const { alerts, setAlerts } = useContext(AlertContext)
 
     const loginUser = async (e) => {
@@ -34,7 +34,7 @@ export const AuthProvider = ({children}) => {
                 setEmail(jwt_decode(data.access).email);
                 localStorage.setItem('authTokens', JSON.stringify(data));
                 e.target.reset();
-                setLogin(false);
+                setIsLoginShow(false);
                 setAlerts([...alerts, { id: Date.now(), message: "Вы успешно авторизовались", type: 'correct' }]);
             }
         } catch (error) {
@@ -58,11 +58,10 @@ export const AuthProvider = ({children}) => {
             });
             if (response.status === 201) {
                 loginUser(e);
-                setRegister(false);
+                setIsRegisterShow(false);
                 e.target.reset();
             }
         } catch (error) {
-            console.log(error);
             const message = error.response.data;
             setAlerts([...alerts, { id: Date.now(), message: message, type: 'error' }]);
         }

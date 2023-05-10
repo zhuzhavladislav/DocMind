@@ -13,6 +13,11 @@
     --ms5: calc(var(--ratio) * var(--ms4)); /* 2.488 */
     --ms6: calc(var(--ratio) * var(--ms5)); /* 2.986 */
     --ms7: calc(var(--ratio) * var(--ms6)); /* 3.583 */
+    --main-gray-color: #363636;
+    --main-gray-transparent: rgba(0, 0, 0, 0.432);
+    --main-accent-color: #f86021;
+    --main-color: #ffffff;
+
 }
 
 *{
@@ -43,7 +48,7 @@
 }
 button{
     cursor: pointer;
-    background-color: #363636;
+    background-color: var(--main-gray-color);
     color: white;
     font-size: calc(var(--base-em) / var(--ms1));
     border-color: transparent;
@@ -56,7 +61,7 @@ button{
     transition: all 0.2s;
 }
 button:hover{
-    background-color: #f86021;
+    background-color: var(--main-accent-color);
     color: white;
     
 }
@@ -70,27 +75,27 @@ td {
     font-size: 12px;
 }
 h6 { 
-    color: #363636;
+    color: var(--main-gray-color);
     font-size: calc(var(--base-em) / var(--ms1));
 }
 h5 { 
-    color: #363636;
+    color: var(--main-gray-color);
     font-size: calc(var(--base-em) * var(--ms0));
 }
 h4 { 
-    color: #363636;
+    color: var(--main-gray-color);
     font-size: calc(var(--base-em) * var(--ms1));
 }
 h3 { 
-    color: #363636;
+    color: var(--main-gray-color);
     font-size: calc(var(--base-em) * var(--ms2));
 }
 h2 { 
-    color: #363636;
+    color: var(--main-gray-color);
     font-size: calc(var(--base-em) * var(--ms3));
 }
 h1 { 
-    color: #363636;
+    color: var(--main-gray-color);
     font-size: calc(var(--base-em) * var(--ms4));
 }
 p {

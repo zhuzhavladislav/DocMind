@@ -6,6 +6,7 @@ import Table from './Table/Table';
 import AuthContext from '../../context/AuthContext';
 import SidebarContext from '../../context/LoginContext';
 import AlertContext from '../../context/AlertContext';
+import HelpButton from "../Info/HelpButton/HelpButton";
 
 const Analyzer = () => {
   
@@ -17,7 +18,8 @@ const Analyzer = () => {
   const [category, setCategory] = useState("noStopWords")
   const [isLoading, setIsLoading] = useState(false)
   const [duration, setDuration] = useState(0)
-  const sectionRef = useRef(null)
+  const resultRef = useRef(null)
+  const analyzeRef = useRef(null)
 
   //Формируем POST запрос к серверу Django, и получаем ответ в виде данных
   const analyzeText = (e, format) => {
@@ -49,11 +51,9 @@ const Analyzer = () => {
         setAnalyzeInfo(res.data);
         setText(res.data.text)
         setIsLoading(false)
-        console.log(res.data)
       })
       .catch((err) => {
-        console.log(err);
-        alert(err.response?.data || 'Непредвиденная ошибка');
+        setAlerts([...alerts, { id: Date.now(), message: `${err.response?.data || 'Непредвиденная ошибка'}`, type: 'error' }])
         setIsLoading(false);
       });
   }
@@ -80,6 +80,29 @@ const Analyzer = () => {
     }
   }
 
+  const clearResult = () => { // Временное-вечное решение
+    const scrollToTop = () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      })
+    }
+
+    scrollToTop()
+
+    if (window.pageYOffset === 0) {
+      setAnalyzeInfo()
+      setText("")
+    }
+    window.addEventListener('scroll', function scrollHandler() {
+      if (window.pageYOffset === 0) {
+        setAnalyzeInfo()
+        setText("")
+        window.removeEventListener('scroll', scrollHandler)
+      }
+    })
+  }
+
   useEffect(() => {
     if (textFromSidebar) {
       setText(textFromSidebar.text)
@@ -90,12 +113,13 @@ const Analyzer = () => {
 
   useEffect(() => {
     if (analyzeInfo) {
-      sectionRef.current.scrollIntoView({ behavior: "smooth" }); // вызываем scrollIntoView() после установки analyzeInfo
+      resultRef.current.scrollIntoView({ behavior: "smooth" }); // вызываем scrollIntoView() после установки analyzeInfo
     }
   }, [analyzeInfo])
 
   return (
-    <main className={s.container}>
+    <main ref = { analyzeRef }  className={s.container}>
+      <HelpButton />
       <section className={s.section}>
         <h1 style={{ alignSelf: "center" }}>Семантический анализ текста DocMind</h1>
         <div className={s.filesButtons}>
@@ -111,11 +135,11 @@ const Analyzer = () => {
         <textarea id="text" name="text" className={s.textInput} placeholder="Или можете ввести текст вручную..." value={text} onChange={e => { setText(e.target.value); setAnalyzeInfo() }}></textarea>
         <div className={s.analyzeButtons}>
           <button onClick={analyzeText} className={s.button}>Проанализировать</button>
-          {analyzeInfo ? <button onClick={() => { setText(""); setAnalyzeInfo() }} className={s.button}>Очистить результат</button> : null}
+          {analyzeInfo ? <button onClick={() => clearResult() } className={s.button}>Очистить результат</button> : null}
           {user && analyzeInfo ? <button onClick={saveText} className={s.button}>Сохранить результат</button> : null}
         </div>
       </section>
-      <section ref={sectionRef} className={analyzeInfo ? `${s.section} ${s.tableFade} ${s.show}` : `${s.section} ${s.tableFade}`}>
+      <section ref={resultRef} className={analyzeInfo ? `${s.section} ${s.tableFade} ${s.show}` : `${s.section} ${s.tableFade}`}>
         <table cellPadding="0" cellSpacing="0" border="0" id="table" className={st.table}>
           <tbody>
             <tr>

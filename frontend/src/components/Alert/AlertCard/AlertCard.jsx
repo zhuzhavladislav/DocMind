@@ -4,7 +4,6 @@ import AlertContext from '../../../context/AlertContext'
 
 const AlertCard = ({id, message, type }) => {
     const [isVisible, setIsVisible] = useState();
-    const [isHidden, setIsHidden] = useState();
     const {alerts, setAlerts} = useContext(AlertContext);
 
     useEffect(() => {
@@ -32,7 +31,6 @@ const AlertCard = ({id, message, type }) => {
 
     const hideCard = () => {
         const timer3 = setTimeout(() => {
-            setIsHidden(true);
             removeAlert(id);
         }, 500);
 
@@ -43,7 +41,7 @@ const AlertCard = ({id, message, type }) => {
         setAlerts(alerts => alerts.filter(alert => alert.id !== id)); // удаляем объект с указанным id из массива
     };
     
-    return !isHidden ? (
+    return (
         <div className={`${s.toast}  ${isVisible ? s.show : null}`}>
             <div className={s.toastContent}>
                 <div className={`${s.check} ${getStatusClass()}`}>
@@ -56,10 +54,10 @@ const AlertCard = ({id, message, type }) => {
                     <span className={s.text2}>{message}</span>
                 </div>
                 <svg aria-hidden="true" role="img" focusable="false" viewBox="0 0 24 24" className={s.close} onClick={() => {setIsVisible(false); hideCard()}}><path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"></path></svg>
-                <div className={`${s.progress} ${true ? s.show : null} ${getStatusClass()}`}></div>
+                <div className={`${s.progress} ${s.show} ${getStatusClass()}`}></div>
             </div>
         </div>
-    ) : null;
+    )
 }
 
 export default AlertCard

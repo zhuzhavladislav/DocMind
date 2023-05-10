@@ -5,6 +5,7 @@ import s from './Account.module.css'
 import axios from 'axios';
 import ProfileTextCard from './ProfileTextCard/ProfileTextCard'
 import AlertContext from '../../context/AlertContext';
+import HelpButton from "../Info/HelpButton/HelpButton";
 
 const Account = () => {
   const { user, email, authTokens, logoutUser } = useContext(AuthContext)
@@ -71,6 +72,7 @@ const Account = () => {
 
   return (
     <main className={s.container}>
+      <HelpButton />
       <section className={s.section}>
         <div className={s.profileContainer}>
           <div className={s.avatarContainer}>{user.charAt(0)}</div>

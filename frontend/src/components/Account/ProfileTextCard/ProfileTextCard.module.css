@@ -65,7 +65,7 @@
 }
 .date{
   font-weight: 300;
-  color: #f86021;
+  color: var(--main-accent-color);
 }
 
 .miniButtons {
@@ -97,8 +97,8 @@
   transition: all 0.2s;
 }
 .miniButtons div:hover{
-  background-color:#f86021;
-  border-color: #f86021;
+  background-color:var(--main-accent-color);
+  border-color: var(--main-accent-color);
 }
 .miniButtons div:hover p{
   color:#ffffff;

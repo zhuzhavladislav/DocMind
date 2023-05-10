@@ -25,24 +25,12 @@
   left: 0px;
   transition: opacity 1s ease-out, visibility 1s ease-out;
 }
-@-webkit-keyframes fade{
-    from{opacity: .4;}
-    to{opacity: 1;}
-}
-@keyframes fade{
-    from{opacity: .4;}
-    to{opacity: 1;}
-}
 
 .container {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  -webkit-animation-name: fade;
-  -webkit-animation-duration: 1s;
-  animation-name: fade;
-  animation-duration: 1s;
 }
 .section{
   display: flex;
@@ -86,11 +74,11 @@
 }
 .fileInput1 + .fileInputLabel1 {
   background-color:lightblue;
-  color: #363636;
+  color: var(--main-gray-color);
 }
 .fileInput2 + .fileInputLabel2 {
   background-color:lightgreen;
-  color: #363636;
+  color: var(--main-gray-color);
 }
 
 .fileInput:focus + label,
@@ -134,8 +122,8 @@
 .filter input {
   display: flex;
   cursor: pointer;
-  background-color: rgb(243, 243, 243);
-  color: black;
+  background-color: var(--main-gray-color);
+  color: var(--main-color);
   border-radius: 100px;
   padding-left: 25px;
   padding-right: 25px;
@@ -148,11 +136,8 @@
 .filter input[type="radio"] {
   display: none;
 }
-.filter label:hover {
-  background: #ddd;
-}
 .filter input[type="radio"]:checked + label {
-  background-color: #363636;
+  background-color: var(--main-accent-color);
   color: white;
 }
 
@@ -182,7 +167,7 @@
   width: 230px;
   padding: 0.9em;
   border-radius: 100px;
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--main-gray-color);
 }
 .hint:hover::after {
     position: absolute;
@@ -193,7 +178,7 @@
     top: 13px;
     border-left: 8px solid transparent;
     border-right: 8px solid transparent;
-    border-bottom: 8px solid rgba(0, 0, 0, 0.8);
+    border-bottom: 8px solid var(--main-gray-color);
 }
 
 .loading {
@@ -208,7 +193,8 @@
   align-items: center;
   font-size: 32px;
   overflow: hidden;
-  background-color:rgba(0, 0, 0, 0.6);
+  background-color:var(--main-gray-transparent);
+  backdrop-filter: blur(1px);
 }
 .loader {
   width: 48px;

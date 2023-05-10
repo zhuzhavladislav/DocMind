@@ -6,11 +6,11 @@ export default RegisterContext
 
 export const RegisterProvider = ({children}) => {
     
-    const [register, setRegister] = useState(false)
+    const [isRegisterShow, setIsRegisterShow] = useState(false)
 
     const contextData = {
-        register,
-        setRegister,
+        isRegisterShow,
+        setIsRegisterShow,
     }
 
     return(

@@ -18,12 +18,12 @@
 }
 .paginationButton.active{
     cursor: pointer;
-    border-color: #f86021;
-    background-color: #f86021;
+    border-color: var(--main-accent-color);
+    background-color: var(--main-accent-color);
     color: white;
 }
 .paginationButton:hover{
-    border-color: #f86021;
-    background-color: #f86021;
+    border-color: var(--main-accent-color);
+    background-color: var(--main-accent-color);
     color: white;
 }

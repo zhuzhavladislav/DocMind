@@ -25,7 +25,6 @@ const ProfileTextCard = ({ text, getTexts }) => {
                     'Authorization': 'Bearer ' + String(authTokens.access)
                 }
             });
-            console.log(response);
             if (response.status === 204) {
                 setAlerts([...alerts, { id: Date.now(), message: "Проверка удалена", type: 'correct' }])
                 getTexts()

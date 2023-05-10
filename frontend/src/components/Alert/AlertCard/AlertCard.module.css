@@ -4,7 +4,7 @@
   word-wrap: break-word;
   overflow: hidden;
   white-space: break-spaces;
-  border-radius: 12px;
+  border-radius: 7px;
   background: #ffffff;
   padding: 10px 35px 10px 15px;
   font-size: calc(var(--base-em) / var(--ms1));

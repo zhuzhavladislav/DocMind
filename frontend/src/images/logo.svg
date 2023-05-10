@@ -3,7 +3,7 @@
   <defs>
     <style>
       .cls-1 {
-        fill: #363636;
+        fill: var(--main-gray-color);
       }
 
       .cls-2 {

@@ -12,13 +12,13 @@
 }
 .table th {
   text-align: left;
-  color: #363636;
+  color: var(--main-gray-color);
   padding: .5em .75em;;
   border-radius: 0px;
   border-bottom: 1px solid #c6d5e1;
   font-size: calc(var(--base-em) / var(--ms1));
   /* color: white;
-  background: #363636;
+  background: var(--main-gray-color);
   border-left: 1px solid #c6d5e1; */
 }
 .table th:nth-child(1){

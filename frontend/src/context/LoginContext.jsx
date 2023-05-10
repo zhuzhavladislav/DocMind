@@ -6,14 +6,14 @@ export default LoginContext
 
 export const LoginProvider = ({children}) => {
     
-    const [login, setLogin] = useState(false)
+    const [isLoginShow, setIsLoginShow] = useState(false)
     const [textFromSidebar, setTextFromSidebar] = useState(null)
 
     const contextData = {
         textFromSidebar,
         setTextFromSidebar,
-        login,
-        setLogin,
+        isLoginShow,
+        setIsLoginShow,
     }
 
     return(

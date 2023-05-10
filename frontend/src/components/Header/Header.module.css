@@ -24,21 +24,21 @@ header {
 }
 .menu a {
     font-weight: 500;
-    color: #363636;
+    color: var(--main-gray-color);
     transition: 0.2s;
 }
 .menu a:link {
-    color: #363636;
+    color: var(--main-gray-color);
 }
 .menu a:visited {
-    color: #363636;
+    color: var(--main-gray-color);
 }
 .menu a:hover {
     cursor: pointer;
-    color: #f86021;
+    color: var(--main-accent-color);
 }
 .menu a:active {
-    color: #f86021;
+    color: var(--main-accent-color);
 }
 
 .account {
@@ -46,10 +46,10 @@ header {
     align-items: center;
 }
 .account a {
-    color: #363636;
+    color: var(--main-gray-color);
 }
 .account a:hover {
-    color: #363636;
+    color: var(--main-gray-color);
 }
 .account strong {
     padding: 0.1em 0.3em;
@@ -86,4 +86,26 @@ header {
 .login strong:hover {
     color: #ff5c16;
     background-color:#f8622118;
+}
+
+@media (max-width: 640px) {
+    .head{
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
+        height: auto !important;
+        max-width: 960px;
+        width: 100%;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1em;
+    }
+    .menu{
+        display: flex;
+        flex-direction: column;
+        margin-left: 10px;
+        align-items: center;
+        gap: 1em;
+        transition: 0.2s;
+    }
 }

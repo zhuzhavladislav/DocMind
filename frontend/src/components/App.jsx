@@ -7,8 +7,8 @@ import './App.css';
 import AppRouter from "./AppRouter";
 import Footer from "./Footer/Footer";
 import Header from "./Header/Header";
-import LoginModal from "./Login/LoginModal";
-import RegisterModal from './Register/RegisterModal'
+import LoginModal from "./Auth/Login/LoginModal";
+import RegisterModal from './Auth/Register/RegisterModal'
 import Alert from "./Alert/Alert";
 
 

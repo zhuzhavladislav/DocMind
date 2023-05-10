@@ -1,0 +1,23 @@
+.help{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    padding: 7px 15px 7px 7px;
+    gap: 10px;
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    width: auto;
+    height: auto;
+    background-color: var(--main-gray-color);
+    border-radius: 50px;
+    transition: 0.3s;
+    z-index: 1;
+}
+.help:hover{
+    background-color: var(--main-accent-color);
+}
+.help svg{
+    stroke: white;
+}

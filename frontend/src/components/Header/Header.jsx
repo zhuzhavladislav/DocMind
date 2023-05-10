@@ -9,8 +9,8 @@ import logo from '../../images/logo.svg'
 
 const Header = () => {
     const {user, email, logoutUser} = useContext(AuthContext)
-    const { setLogin } = useContext(LoginContext)
-    const { setRegister } = useContext(RegisterContext)
+    const { setIsLoginShow } = useContext(LoginContext)
+    const { setIsRegisterShow } = useContext(RegisterContext)
     return (
         <header>
             <div className={s.head}>
@@ -29,7 +29,7 @@ const Header = () => {
                             </span>
                         </div>
                         :
-                        <div className={s.login}><strong onClick={() => setLogin(true)}>Вход</strong>или<strong onClick={() => setRegister(true)}>Регистрация</strong></div>
+                        <div className={s.login}><strong onClick={() => setIsLoginShow(true)}>Вход</strong>или<strong onClick={() => setIsRegisterShow(true)}>Регистрация</strong></div>
                     }
                 </nav>
             </div>
