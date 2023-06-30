@@ -7,11 +7,11 @@ const CircularProgress = ({ progress, dataTooltip }) => {
 
     const getColor = () => {
         if (progress === 0) {
-            return "#fff";
-        } else if (progress <= 10) {
             return "#000";
-        } else if (progress <= 20) {
+        } else if (progress <= 10) {
             return "#f00";
+        } else if (progress <= 20) {
+            return "#f05";
         } else if (progress <= 30) {
             return "#f44336";
         } else if (progress <= 40) {
