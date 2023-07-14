@@ -57,8 +57,4 @@ python manage.py runserver
 ```
 npm start
 ```
-Веб-приложение запустится на 
-
-
-
-
+Веб-приложение запустится на `localhost:3000`, сервер на `localhost:8000`
