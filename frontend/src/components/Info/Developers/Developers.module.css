@@ -1,8 +1,8 @@
 .page{
-    height: 70vh;
+    min-height: 100vh;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    flex-flow: row nowrap;
     -webkit-animation-name: fade;
     -webkit-animation-duration: 1s;
     animation-name: fade;
@@ -16,24 +16,4 @@
 @keyframes fade{
     from{opacity: .4;}
     to{opacity: 1;}
-}
-
-.container{
-    width: 60vw;
-    padding-top: 5vh;
-    padding-bottom: 5vh;
-    padding-left: 3vw;
-    padding-right: 3vw;
-    background-color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    box-shadow: 2px 0 30px rgba(0, 0, 0, 0.1);
-    transform: scale(0.95);
-    transition: transform 0.9s;
-}
-.container:hover{
-    transform: scale(1);
 }

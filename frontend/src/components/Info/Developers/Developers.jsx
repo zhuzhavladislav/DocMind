@@ -5,7 +5,6 @@ const Developers = () => {
   
   return (
     <main className={s.page}>
-      <div className={s.container}>
         <p>Самарский университет</p>
         <p>Кафедра программных систем</p>
         <p style={{ marginTop: 30 }}>
@@ -20,7 +19,6 @@ const Developers = () => {
         </p>
         <p>Жужа Владислав Сергеевич</p>
         <p style={{ marginTop: 30 }}>Самара 2023</p>
-      </div>
     </main>
   );
 };
